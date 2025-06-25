@@ -1,4 +1,3 @@
-// バブル作成関数
 function createBubble(text) {
   const container = document.getElementById('todo-container');
 
@@ -6,13 +5,11 @@ function createBubble(text) {
   bubble.className = 'bubble';
   bubble.innerHTML = `${text} <button onclick="this.parentElement.remove()">×</button>`;
 
-  container.appendChild(bubble);
+  const bubbleWidth = 120;
+  const bubbleHeight = 120;
 
-  const bubbleWidth = bubble.offsetWidth;
-  const bubbleHeight = bubble.offsetHeight;
-
-  const maxX = window.innerWidth  - bubbleWidth;
-  const maxY = window.innerHeight - bubbleHeight;
+  const maxX = container.clientWidth  - bubbleWidth;
+  const maxY = container.clientHeight - bubbleHeight;
 
   let placed = false;
   let attempt = 0;
@@ -25,7 +22,7 @@ function createBubble(text) {
     const existingBubbles = container.getElementsByClassName('bubble');
     let overlap = false;
 
-    for (let i = 0; i < existingBubbles.length - 1; i++) {
+    for (let i = 0; i < existingBubbles.length; i++) {
       const other = existingBubbles[i];
       const otherLeft = parseFloat(other.style.left);
       const otherTop  = parseFloat(other.style.top);
@@ -47,9 +44,10 @@ function createBubble(text) {
     }
     attempt++;
   }
+
+  container.appendChild(bubble); // ← 最後に追加
 }
 
-// フォーム送信時の処理
 document.getElementById('todo-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
@@ -58,7 +56,5 @@ document.getElementById('todo-form').addEventListener('submit', function(e) {
   if (!text) return;
 
   createBubble(text);
-
   input.value = '';
 });
-
