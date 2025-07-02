@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePreview();
     }
     
-    // 更新预览
+    // アップデートプレビュー
     function updatePreview() {
         const date = new Date(eventDate.value);
         const time = eventTime.value;
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="event-content">${sample.content}</div>
                 <div class="event-actions">
                     <button class="event-btn resend-btn">
-                        <i class="fas fa-redo"></i> 再放送
+                        <i class="fas fa-redo"></i> 再送信
                     </button>
                 </div>
             `;
