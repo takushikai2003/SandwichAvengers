@@ -54,7 +54,7 @@
   <div class="avatar-grid" id="avatarGrid"></div>
 
   <div id="preview"></div>
-  <button onclick="saveAvatar()">Confirm Avatar</button><br><br>
+  <button id="confirm_avatar">Confirm Avatar</button><br><br>
 
   <label for="avatarUrl">Paste Custom Avatar URL:</label><br>
   <input type="url" id="avatarUrl" placeholder="https://...image.png" style="width: 300px;" oninput="previewUrlAvatar()" />
@@ -63,16 +63,9 @@
   <p id="error"></p>
   <br><a href="guild.html">Skip and Go to Guild Selection</a>
 
-  <script>
-    // Firebase Setup
-    const firebaseConfig = {
-      apiKey: "AIzaSyAR8aAj_-vcBgUSft8yH0gAQ81PQogi16w",
-      authDomain: "mbti-2fd58.firebaseapp.com",
-      projectId: "mbti-2fd58",
-      storageBucket: "mbti-2fd58.appspot.com",
-      messagingSenderId: "242270817890",
-      appId: "1:242270817890:web:8061e03390beecc1928b3b"
-    };
+  <script type="module">
+    import { firebaseConfig } from './env/firebaseCommon.js';
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -122,6 +115,8 @@
       showError("");
     }
 
+    document.getElementById("confirm_avatar").addEventListener("click", saveAvatar);
+    
     function saveAvatar() {
       if (!selectedAvatar || !currentUid) return showError("Please select or paste an avatar URL first.");
       db.collection("users").doc(currentUid).update({

@@ -87,20 +87,14 @@
 
   <div class="guild-grid" id="guildGrid"></div>
 
-  <button onclick="assignRecommendedGuild()">🎯 Recommend Guild</button><br><br>
-  <button onclick="confirmGuild()">✅ Confirm Guild</button>
+  <button id="recommend_guild">🎯 Recommend Guild</button><br><br>
+  <button id="confirm_guild">✅ Confirm Guild</button>
 
   <p id="error"></p>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAR8aAj_-vcBgUSft8yH0gAQ81PQogi16w",
-      authDomain: "mbti-2fd58.firebaseapp.com",
-      projectId: "mbti-2fd58",
-      storageBucket: "mbti-2fd58.appspot.com",
-      messagingSenderId: "242270817890",
-      appId: "1:242270817890:web:8061e03390beecc1928b3b"
-    };
+  <script type="module">
+    import { firebaseConfig } from './env/firebaseCommon.js';
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -126,6 +120,8 @@
       selectedGuild = name;
       showError(`You selected: ${name}`);
     }
+
+    document.getElementById("recommend_guild").addEventListener("click", assignRecommendedGuild);
 
     async function assignRecommendedGuild() {
       try {
@@ -155,6 +151,8 @@
       }
     }
 
+    document.getElementById("confirm_guild").addEventListener("click", confirmGuild);
+    
     function confirmGuild() {
       if (!selectedGuild || !currentUid) return showError("Please select a guild first!");
       db.collection("users").doc(currentUid).update({
