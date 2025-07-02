@@ -1,54 +1,3 @@
-body {
-  display: flex;
-  margin: 0;
-  font-family: sans-serif;
-}
-
-.left, .right {
-  width: 50%;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.left {
-  border-right: 1px solid #ccc;
-}
-
-/* MBTI: Thinking (T) = シンプル */
-body.T .left,
-body.T .right {
-  background-color: #f8f8f8;
-  color: #333;
-}
-
-/* MBTI: Feeling (F) = カラフル */
-body.F .left {
-  background-color: #e3f2fd;
-}
-body.F .right {
-  background-color: #fce4ec;
-}
-
-/* タスク表示（J:順序, P:バブル） */
-body.J #task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-body.P #task-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.task {
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
 #progress-area {
   display: flex;
   flex-wrap: wrap;
@@ -70,3 +19,4 @@ body.P #task-list {
   align-items: center;
   gap: 8px;
 }
+
