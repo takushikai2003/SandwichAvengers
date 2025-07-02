@@ -3,8 +3,20 @@ function createBubble(text) {
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.innerHTML = `${text} <button onclick="this.parentElement.remove()">×</button>`;
+  // bubble.innerHTML = `${text} <button onclick="this.parentElement.remove()">×</button>`;
+  const span = document.createElement('span');
+  span.textContent = text;
+  bubble.appendChild(span);
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = '×';
+  bubble.appendChild(deleteButton); 
 
+  deleteButton.onclick = function() {
+    bubble.remove();
+    console.log('Bubble deleted:', text);
+  };
+
+  
   const bubbleWidth = 120;
   const bubbleHeight = 120;
 
