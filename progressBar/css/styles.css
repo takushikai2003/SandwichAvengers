@@ -1,0 +1,15 @@
+#progress-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 10px;
+}
+.calendar-day {
+  width: 16px;
+  height: 16px;
+  background: #eee;
+  border: 1px solid #ccc;
+}
+.calendar-day.done {
+  background: #4caf50;
+}
