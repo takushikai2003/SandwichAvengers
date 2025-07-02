@@ -13,7 +13,18 @@ function addListItem(text) {
   const list = document.getElementById('todo-list');
 
   const li = document.createElement('li');
-  li.innerHTML = `${text} <button onclick="this.parentElement.remove()">×</button>`;
+  const span = document.createElement('span');
+  span.innerHTML = text;
+  li.appendChild(span);
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = '×';
+  li.appendChild(deleteButton);
+
+
+  deleteButton.onclick = function () {
+    li.remove();
+    console.log('Item deleted:', text);
+  };
 
   list.appendChild(li);
 }
