@@ -151,10 +151,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 device.connected = false;
                 updateDeviceStatus(device);
                 
-                showMessage(`设备 ${device.id} 已断开`, 'info');
+                showMessage(`デバイス ${device.id}切断`, 'info');
             } catch (err) {
-                console.error('断开连接错误:', err);
-                showMessage(`设备 ${device.id} 断开失败: ${err.message}`, 'error');
+                console.error('切断エラー:', err);
+                showMessage(`デバイス ${device.id} 切断に失敗しました: ${err.message}`, 'error');
             }
         });
     });
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 結果を表示
         if (successCount > 0) {
-            showMessage(`送信成功 ${successCount} デバイス${errorCount > 0 ? `, ${errorCount} 个设备失败` : ''}`, 'success');
+            showMessage(`送信成功 ${successCount} デバイス${errorCount > 0 ? `,  デバイス${errorCount}が故障しました` : ''}`, 'success');
             
             // 履歴に追加
             addToHistory(year, month, day, hours, minutes, content);
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="event-content">${content}</div>
             <div class="event-actions">
                 <button class="event-btn resend-btn">
-                    <i class="fas fa-redo"></i> 重新广播
+                    <i class="fas fa-redo"></i> 再送信
                 </button>
             </div>
         `;
