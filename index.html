@@ -91,22 +91,16 @@
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <br>
-    <button id="loginBtn" onclick="login()">Login</button>
-    <button id="signupBtn" onclick="signUp()">Create Account</button>
+    <button id="loginBtn" >Login</button>
+    <button id="signupBtn" >Create Account</button>
     <hr>
-    <button id="guestBtn" onclick="guestLogin()">Enter as Guest (3 days)</button>
+    <button id="guestBtn" >Enter as Guest (3 days)</button>
     <p id="error"></p>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAR8aAj_-vcBgUSft8yH0gAQ81PQogi16w",
-      authDomain: "mbti-2fd58.firebaseapp.com",
-      projectId: "mbti-2fd58",
-      storageBucket: "mbti-2fd58.appspot.com",
-      messagingSenderId: "242270817890",
-      appId: "1:242270817890:web:8061e03390beecc1928b3b"
-    };
+  <script type="module">
+    import { firebaseConfig } from './env/firebaseCommon.js';
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -143,6 +137,8 @@
       await userDoc.set(defaultData);
     }
 
+
+    document.getElementById('signupBtn').addEventListener('click', signup);
     async function signUp() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
@@ -163,6 +159,8 @@
       setLoading(false);
     }
 
+    document.getElementById('guestBtn').addEventListener('click', guestLogin);
+    
     async function guestLogin() {
       setLoading(true);
       try {
@@ -174,6 +172,8 @@
       }
       setLoading(false);
     }
+
+    document.getElementById('loginBtn').addEventListener('click', login);
 
     async function login() {
       const email = document.getElementById('email').value.trim();

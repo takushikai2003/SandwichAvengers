@@ -1,4 +1,4 @@
-function consultAdvisor() {
+export function consultAdvisor() {
   const question = document.getElementById("advisorInput").value.trim();
   if (!question) return;
 

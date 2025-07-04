@@ -1,7 +1,7 @@
 const boardDiv = document.getElementById("boardPosts");
 const boardInput = document.getElementById("boardInput");
 
-function postBoardMessage() {
+export function postBoardMessage() {
   const text = boardInput.value.trim();
   if (!text || !auth.currentUser) return;
 

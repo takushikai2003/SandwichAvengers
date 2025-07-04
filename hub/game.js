@@ -1,6 +1,6 @@
 let canvas, ctx, player, keys = {}, started = false;
 
-function startSoccerGame() {
+export function startSoccerGame() {
   if (started) return; started = true;
 
   canvas = document.getElementById('gameCanvas');

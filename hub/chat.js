@@ -1,7 +1,7 @@
 const chatLog = document.getElementById("chatLog");
 const chatInput = document.getElementById("chatInput");
 
-function sendChat() {
+export function sendChat() {
   const text = chatInput.value.trim();
   if (!text || !auth.currentUser) return;
 
