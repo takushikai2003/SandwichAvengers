@@ -4,6 +4,7 @@
   gap: 2px;
   padding: 10px;
 }
+
 .calendar-day {
   width: 16px;
   height: 16px;
@@ -12,4 +13,10 @@
 }
 .calendar-day.done {
   background: #4caf50;
+}
+
+#progress-percent{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
 }

@@ -1,3 +1,9 @@
+'use strict';
+import { loadCSS } from "../lib/loadCss.js";
+
+// CSSの読み込み
+loadCSS(new URL("./css/style.css", import.meta.url));
+
 export class ProgressBar{
 	/**
 	 * 
@@ -5,21 +11,26 @@ export class ProgressBar{
 	 */
 	constructor(days){
 		this.totalDays = days;
+
+		const elem = document.createElement("div");
+		this.elem = elem;
 		
-		const progressArea = document.getElementById('progress-area');
+		const progressArea = document.createElement("div");
+		progressArea.id = "progress-area";
 		progressArea.innerHTML = ''; // 既存の内容をクリア
 		for (let i = 0; i < days; i++) {
 			const day = document.createElement('div');
 			day.className = 'calendar-day';
-			// if (i === 0 && percent === 100) {
-			// 	day.classList.add('done');
-			// }
 			progressArea.appendChild(day);
 		}
+		elem.appendChild(progressArea);
+
 
 		// const percent = total ? Math.floor((completed / total) * 100) : 0;
-		const progressText = document.getElementById('progress-percent');
+		const progressText = document.createElement("div");
+		progressText.id = "progress-percent";
 		progressText.textContent = `進捗：${0}%`;
+		elem.appendChild(progressText);
 	}
 
 	completeToday(){
