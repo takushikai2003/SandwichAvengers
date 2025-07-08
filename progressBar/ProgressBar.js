@@ -4,6 +4,8 @@ export class ProgressBar{
 	 * @param {Integer} days 表示する文字数（Sタイプなら7日、Nタイプなら100日）
 	 */
 	constructor(days){
+		this.totalDays = days;
+		
 		const progressArea = document.getElementById('progress-area');
 		progressArea.innerHTML = ''; // 既存の内容をクリア
 		for (let i = 0; i < days; i++) {
@@ -26,11 +28,18 @@ export class ProgressBar{
 		// 失敗したら？
 		const progressArea = document.getElementById('progress-area');
 		const days = progressArea.children;
-		for (let i = 0; i < days.length; i++) {
+
+		let percent = 0;
+		for (let i = 0; i < this.totalDays; i++) {
 			if (!days[i].classList.contains('done')) {
 				days[i].classList.add('done');
-				return;
+
+				percent = Math.floor(((i+1) / this.totalDays) * 100);
+				break;
 			}
 		}
+
+		const progressText = document.getElementById('progress-percent');
+		progressText.textContent = `進捗：${percent}%`;
 	}
 }

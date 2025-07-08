@@ -11,8 +11,8 @@
   <button id="complete">完了</button>
 <!-- <script src="./js/scripts.js" type="module"></script> -->
  <script type="module">
-  import { ProgressBar } from './js/ProgressBar.js';
-  const progressBar = new ProgressBar(100);
+  import { ProgressBar } from './ProgressBar.js';
+  const progressBar = new ProgressBar(10);
   document.getElementById("complete").addEventListener("click", () => {
     progressBar.completeToday();
   });
