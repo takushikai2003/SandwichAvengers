@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MBTI Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./style.css"></link>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <h2>📝 Discover Your MBTI Type</h2>
+
+    <form id="quizForm">
+      <div class="question">
+        <p>1. You prefer to:</p>
+        <label><input type="radio" name="q1" value="E" required> Be around people (E)</label>
+        <label><input type="radio" name="q1" value="I"> Spend time alone (I)</label>
+      </div>
+
+      <div class="question">
+        <p>2. You focus more on:</p>
+        <label><input type="radio" name="q2" value="S" required> Facts and details (S)</label>
+        <label><input type="radio" name="q2" value="N"> Ideas and patterns (N)</label>
+      </div>
+
+      <div class="question">
+        <p>3. You make decisions based on:</p>
+        <label><input type="radio" name="q3" value="T" required> Logic (T)</label>
+        <label><input type="radio" name="q3" value="F"> Feelings (F)</label>
+      </div>
+
+      <div class="question">
+        <p>4. You prefer to:</p>
+        <label><input type="radio" name="q4" value="J" required> Plan ahead (J)</label>
+        <label><input type="radio" name="q4" value="P"> Be spontaneous (P)</label>
+      </div>
+
+      <button type="submit">Submit Quiz</button>
+      <p id="error"></p>
+    </form>
+  </div>
+
+  <script src="./main.js" type="module"></script>
+</body>
+</html>
