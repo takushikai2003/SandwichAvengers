@@ -28,4 +28,4 @@ const left_area = document.getElementById("left_area");
 const right_area = document.getElementById("right_area");
 
 left_area.appendChild(left_content.elem);
-right_area.appendChild(right_content);
+right_area.appendChild(right_content.elem);

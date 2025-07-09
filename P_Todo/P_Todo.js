@@ -44,8 +44,5 @@ export class P_Todo extends EventTarget{
             createBubble(text);
             input.value = '';
         });
-
-
-        return elem;
     }
 }

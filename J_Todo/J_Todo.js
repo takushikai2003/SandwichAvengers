@@ -59,7 +59,5 @@ export class J_Todo extends EventTarget {
 
             todoListEl.appendChild(li);
         }
-
-        return elem;
     }
 }
