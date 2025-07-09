@@ -4,6 +4,7 @@ import { ProgressBar } from "../progressBar/ProgressBar.js";
 
 const mbti = "infj";
 
+// 右側に表示するもの
 let right_content;
 if(mbti.includes("p")){
     right_content = new P_Todo();
@@ -13,6 +14,7 @@ else{
     right_content = new J_Todo();
 }
 
+// 左側にするもの
 let left_content;
 if(mbti.includes("s")){
     left_content = new ProgressBar(100);
