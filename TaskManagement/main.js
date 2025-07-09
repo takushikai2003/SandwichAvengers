@@ -2,7 +2,7 @@ import { P_Todo } from "../P_Todo/P_Todo.js";
 import { J_Todo } from "../J_Todo/J_Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
 
-const mbti = "infj";
+const mbti = "infp";
 
 // 右側に表示するもの
 let right_content;
@@ -24,6 +24,10 @@ else{
     left_content = new ProgressBar(7);
 }
 
+
+right_content.addEventListener("stateChanged", () => {
+    console.log("State changed in right content");
+});
 
 // 
 const left_area = document.getElementById("left_area");

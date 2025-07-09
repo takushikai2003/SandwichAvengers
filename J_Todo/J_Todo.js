@@ -4,6 +4,12 @@ import { loadCSS } from "../lib/loadCss.js";
 // CSSの読み込み
 loadCSS(new URL("./css/style.css", import.meta.url));
 
+/**
+ * @typedef J_Todo
+ * @event J_Todo#added
+ * @event J_Todo#deleted
+ * @event J_Todo#stateChanged
+ */
 export class J_Todo extends EventTarget {
     constructor(){
         super();
@@ -27,37 +33,46 @@ export class J_Todo extends EventTarget {
 
         elem.appendChild(todoForm);
 
+        const todoListEl = document.createElement("ul");
+        todoListEl.className = "todo-list";
+        elem.appendChild(todoListEl);
+
+
+        const _this = this;
+
         todoForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const text = todoInput.value.trim();
             if (!text) return;
 
-            addListItem(text);
+            _this.#addListItem(text, todoListEl);
             todoInput.value = '';
         });
-
-        const todoListEl = document.createElement("ul");
-        todoListEl.className = "todo-list";
-        elem.appendChild(todoListEl);
+    }
 
 
-        function addListItem(text) {
-            const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.innerHTML = text;
-            li.appendChild(span);
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = '×';
-            li.appendChild(deleteButton);
+    #addListItem(text, listParent) {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.innerHTML = text;
+        li.appendChild(span);
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '×';
+        li.appendChild(deleteButton);
 
 
-            deleteButton.onclick = function () {
+        const _this = this;
+        deleteButton.onclick = function () {
             li.remove();
-                console.log('Item deleted:', text);
-            };
+            console.log('Item deleted:', text);
+            _this.dispatchEvent(new CustomEvent("deleted"));
+            _this.dispatchEvent(new CustomEvent("stateChanged"));
+        };
 
-            todoListEl.appendChild(li);
-        }
+        listParent.appendChild(li);
+
+        this.dispatchEvent(new CustomEvent("added"));
+        this.dispatchEvent(new CustomEvent("stateChanged"));
     }
 }

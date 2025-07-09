@@ -1,4 +1,4 @@
-export function createBubble(text) {
+export function createBubble(text, _this) {
     const container = document.getElementById('todo-container');
 
     const bubble = document.createElement('div');
@@ -14,6 +14,8 @@ export function createBubble(text) {
     deleteButton.onclick = function() {
         bubble.remove();
         console.log('Bubble deleted:', text);
+        _this.dispatchEvent(new CustomEvent("deleted"));
+        _this.dispatchEvent(new CustomEvent("stateChanged"));
     };
 
     
@@ -58,4 +60,6 @@ export function createBubble(text) {
     }
 
     container.appendChild(bubble); // ← 最後に追加
+    _this.dispatchEvent(new CustomEvent("added"));
+    _this.dispatchEvent(new CustomEvent("stateChanged"));
 }

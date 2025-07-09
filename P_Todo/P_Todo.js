@@ -5,6 +5,12 @@ import { createBubble } from "./js/createBubble.js";
 // CSSの読み込み
 loadCSS(new URL("./css/style.css", import.meta.url));
 
+/**
+ * @typedef P_Todo
+ * @event P_Todo#added
+ * @event P_Todo#deleted
+ * @event P_Todo#stateChanged
+ */
 export class P_Todo extends EventTarget{
     constructor(){
         super();
@@ -33,6 +39,7 @@ export class P_Todo extends EventTarget{
         todo_container.className = "bubble-container";
         elem.appendChild(todo_container);
 
+        const _this = this;
 
         todoForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -41,7 +48,7 @@ export class P_Todo extends EventTarget{
             const text = input.value.trim();
             if (!text) return;
 
-            createBubble(text);
+            createBubble(text, _this);
             input.value = '';
         });
     }
