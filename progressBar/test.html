@@ -8,13 +8,25 @@
   <!-- <div id="progress-area"></div>
   <div id="progress-percent"></div> -->
   <button id="complete">完了</button>
+  <button id="delete">削除</button>
   <script type="module">
     import { ProgressBar } from './ProgressBar.js';
-    const progressBar = new ProgressBar(10);
+    const progressBar = new ProgressBar(new Date(), 10);
     document.body.appendChild(progressBar.elem);
-    
+
+    let count = 0;
     document.getElementById("complete").addEventListener("click", () => {
-      progressBar.completeToday();
+      const today = new Date();
+      today.setDate(today.getDate() +count );
+      progressBar.completeDate(today);
+
+      count++;
+    });
+
+    document.getElementById("delete").addEventListener("click", () => {
+      const today = new Date();
+      today.setDate(today.getDate() +1 );
+      progressBar.incompleteDate(today);
     });
   </script>
 
