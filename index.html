@@ -188,25 +188,25 @@
       document.getElementById('guestBtn').disabled = isLoading;
     }
 
-    // function handleFirebaseError(error) {
-    //   let message = error.message;
-    //   switch (error.code) {
-    //     case "auth/email-already-in-use":
-    //       message = "This email is already registered.";
-    //       break;
-    //     case "auth/invalid-email":
-    //       message = "Invalid email format.";
-    //       break;
-    //     case "auth/weak-password":
-    //       message = "Password should be at least 6 characters.";
-    //       break;
-    //     case "auth/wrong-password":
-    //     case "auth/user-not-found":
-    //       message = "Incorrect email or password.";
-    //       break;
-    //   }
-    //   showError(message);
-    // }
+    function handleFirebaseError(error) {
+      let message = error.message;
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          message = "This email is already registered.";
+          break;
+        case "auth/invalid-email":
+          message = "Invalid email format.";
+          break;
+        case "auth/weak-password":
+          message = "Password should be at least 6 characters.";
+          break;
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          message = "Incorrect email or password.";
+          break;
+      }
+      showError(message);
+    }
   </script>
 </body>
 </html>

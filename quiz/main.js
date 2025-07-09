@@ -1,12 +1,19 @@
-import { isLogin } from "../lib/firebaseCommon.js";
+import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
 
 // ログインしていなければログイン画面に戻す
 if(!(await isLogin())) {
-    window.location.href = "index.html";
+    window.location.href = "../index.html";
 }
 
 const quizForm = document.getElementById('quizForm');
 const errorEl = document.getElementById('error');
+
+const userProfile = await getUserProfile();
+
+console.log("User Profile:", userProfile);
+
+userProfile.guild = "infj";
+updateUserProfile(userProfile);
 
 quizForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -18,20 +25,21 @@ quizForm.addEventListener('submit', async (e) => {
     const mbtiResult = q1 + q2 + q3 + q4; // e.g., "ENTP"
 
     try {
-    const user = auth.currentUser;
-    if (!user) {
-        errorEl.innerText = "Not logged in. Please log in again.";
-        return;
+        const user = auth.currentUser;
+        if (!user) {
+            errorEl.innerText = "Not logged in. Please log in again.";
+            return;
+        }
+
+        // Update MBTI type in user profile document
+        await db.collection("users").doc(user.uid).update({
+            mbtiType: mbtiResult
+        });
+
+        window.location.href = "./avatar";
     }
-
-    // Update MBTI type in user profile document
-    await db.collection("users").doc(user.uid).update({
-        mbtiType: mbtiResult
-    });
-
-    window.location.href = "avatar.html";
-    } catch (error) {
-    console.error(error);
-    errorEl.innerText = "Failed to save MBTI result: " + error.message;
+    catch (error) {
+        console.error(error);
+        errorEl.innerText = "Failed to save MBTI result: " + error.message;
     }
 });
