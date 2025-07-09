@@ -2,36 +2,48 @@ import { P_Todo } from "../P_Todo/P_Todo.js";
 import { J_Todo } from "../J_Todo/J_Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
 
-const mbti = "infp";
+const mbti = "isfp";
 
 // 右側に表示するもの
-let right_content;
+let todo_content;
+// P
 if(mbti.includes("p")){
-    right_content = new P_Todo();
+    todo_content = new P_Todo();
 }
 // J
 else{
-    right_content = new J_Todo();
+    todo_content = new J_Todo();
 }
 
-// 左側にするもの
-let left_content;
+// 左側に表示するもの
+let progress_bar;
+// S
 if(mbti.includes("s")){
-    left_content = new ProgressBar(100);
+    progress_bar = new ProgressBar(new Date(), 100);
 }
 // N
 else{
-    left_content = new ProgressBar(7);
+    progress_bar = new ProgressBar(new Date(), 7);
 }
 
-
-right_content.addEventListener("stateChanged", () => {
-    console.log("State changed in right content");
-});
-
-// 
+// 表示
 const left_area = document.getElementById("left_area");
 const right_area = document.getElementById("right_area");
 
-left_area.appendChild(left_content.elem);
-right_area.appendChild(right_content.elem);
+left_area.appendChild(progress_bar.elem);
+right_area.appendChild(todo_content.elem);
+
+
+// 最初に完了状態にする（最初はタスクが設定されていないため）
+progress_bar.completeDate(new Date());
+
+
+// Todoの状態が変わるごとに、完了しているかの表示を更新
+todo_content.addEventListener("stateChanged", (e) => {
+    if(todo_content.count == 0){
+        progress_bar.completeDate(new Date());
+    }
+    else{
+        progress_bar.incompleteDate(new Date());
+    }
+});

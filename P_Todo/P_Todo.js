@@ -7,6 +7,7 @@ loadCSS(new URL("./css/style.css", import.meta.url));
 
 /**
  * @typedef P_Todo
+ * @property {Integer} count - 現在のTODOアイテムの数
  * @event P_Todo#added
  * @event P_Todo#deleted
  * @event P_Todo#stateChanged
@@ -17,6 +18,8 @@ export class P_Todo extends EventTarget{
 
         const elem = document.createElement("div");
         this.elem = elem;
+
+        this.count = 0; // 現在のTODOアイテムの数
 
         const todoForm = document.createElement("form");
         todoForm.id = "todo-form";

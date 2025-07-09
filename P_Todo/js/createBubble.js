@@ -14,6 +14,10 @@ export function createBubble(text, _this) {
     deleteButton.onclick = function() {
         bubble.remove();
         console.log('Bubble deleted:', text);
+        _this.count--;
+        if (_this.count < 0) {
+            _this.count = 0; // countが負にならないようにする
+        }
         _this.dispatchEvent(new CustomEvent("deleted"));
         _this.dispatchEvent(new CustomEvent("stateChanged"));
     };
@@ -60,6 +64,8 @@ export function createBubble(text, _this) {
     }
 
     container.appendChild(bubble); // ← 最後に追加
+
+    _this.count++;
     _this.dispatchEvent(new CustomEvent("added"));
     _this.dispatchEvent(new CustomEvent("stateChanged"));
 }

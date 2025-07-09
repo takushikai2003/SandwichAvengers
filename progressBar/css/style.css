@@ -6,8 +6,8 @@
 }
 
 .calendar-day {
-  width: 16px;
-  height: 16px;
+  width: 30px;
+  height: 30px;
   background: #eee;
   border: 1px solid #ccc;
 }
