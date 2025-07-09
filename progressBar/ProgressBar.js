@@ -13,6 +13,7 @@ export class ProgressBar{
 		this.totalDays = days;
 
 		const elem = document.createElement("div");
+		elem.setAttribute("style","width:100%; height:100%;");
 		this.elem = elem;
 		
 		const progressArea = document.createElement("div");
