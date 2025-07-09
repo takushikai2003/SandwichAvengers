@@ -74,9 +74,9 @@
   </style>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script> -->
 </head>
 <body>
 
@@ -94,16 +94,89 @@
     <button id="loginBtn" >Login</button>
     <button id="signupBtn" >Create Account</button>
     <hr>
-    <button id="guestBtn" >Enter as Guest (3 days)</button>
+    <button id="guestBtn" >Enter as Guest</button>
     <p id="error"></p>
   </div>
 
   <script type="module">
-    import { firebaseConfig } from './env/firebaseCommon.js';
+    import { isLogin, emailLogin, guestLogin, emailSignup, logout } from './lib/firebaseCommon.js';
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    logout();
+    
+
+
+    document.getElementById('signupBtn').addEventListener('click', async()=>{
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) {
+        showError("Please enter both email and password.");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        await emailSignup(email, password);
+        animateRedirect("./quiz");
+      }
+      catch (error) {
+        handleFirebaseError(error);
+      }
+      finally {
+        setLoading(false);
+      }
+    });
+
+
+    document.getElementById('guestBtn').addEventListener('click', async ()=>{
+      setLoading(true);
+      try{
+        await guestLogin();
+        animateRedirect("./quiz");
+      }
+      catch(error){
+        console.error("Error during guest login:", error);
+        showError("Failed to log in as guest. Please try again.");
+      }
+      finally {
+        setLoading(false);
+      }
+    });
+
+
+    document.getElementById('loginBtn').addEventListener('click', async()=>{
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) {
+        showError("Please enter both email and password.");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        emailLogin(email, password);
+        animateRedirect("./hub");
+      }
+      catch (error) {
+        handleFirebaseError(error);
+      }
+      finally {
+        setLoading(false);
+      }
+    });
+
+
+    // 画面操作系
+    function animateRedirect(targetUrl) {
+      const box = document.querySelector('.login-box');
+      box.style.transition = "transform 0.8s ease, opacity 0.5s ease";
+      box.style.transform = "scale(0.95) translateY(-200px)";
+      box.style.opacity = 0;
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 600);
+    }
 
     function showError(msg) {
       document.getElementById('error').innerText = msg;
@@ -115,131 +188,25 @@
       document.getElementById('guestBtn').disabled = isLoading;
     }
 
-    async function createUserProfile(uid, email, isGuest = false) {
-      const userDoc = db.collection("users").doc(uid);
-      const doc = await userDoc.get();
-      if (doc.exists) return;
-
-      const defaultData = {
-        username: isGuest ? "Guest" : email,
-        mbtiType: "",
-        guild: "",
-        avatar: "default.png",
-        createdAt: new Date(),
-      };
-
-      if (isGuest) {
-        const expires = new Date();
-        expires.setDate(expires.getDate() + 3);
-        defaultData.expiresAt = expires;
-      }
-
-      await userDoc.set(defaultData);
-    }
-
-
-    document.getElementById('signupBtn').addEventListener('click', signUp);
-    async function signUp() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      if (!email || !password) {
-        showError("Please enter both email and password.");
-        return;
-      }
-      setLoading(true);
-      try {
-        const result = await auth.createUserWithEmailAndPassword(email, password);
-        await createUserProfile(result.user.uid, email, false);
-        await result.user.sendEmailVerification();
-        showError("Verification email sent! Please check your inbox.");
-        animateRedirect("quiz.html");
-      } catch (error) {
-        handleFirebaseError(error);
-      }
-      setLoading(false);
-    }
-
-    document.getElementById('guestBtn').addEventListener('click', guestLogin);
-    
-    async function guestLogin() {
-      setLoading(true);
-      try {
-        const result = await auth.signInAnonymously();
-        await createUserProfile(result.user.uid, "guest@example.com", true);
-        animateRedirect("quiz.html");
-      } catch (error) {
-        handleFirebaseError(error);
-      }
-      setLoading(false);
-    }
-
-    document.getElementById('loginBtn').addEventListener('click', login);
-
-    async function login() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      if (!email || !password) {
-        showError("Please enter both email and password.");
-        return;
-      }
-      setLoading(true);
-      try {
-        const result = await auth.signInWithEmailAndPassword(email, password);
-        if (!result.user.emailVerified) {
-          showError("Email not verified. Please check your inbox.");
-          await auth.signOut();
-          setLoading(false);
-          return;
-        }
-        animateRedirect("hub.html");
-      } catch (error) {
-        handleFirebaseError(error);
-      }
-      setLoading(false);
-    }
-
-    function animateRedirect(targetUrl) {
-      const box = document.querySelector('.login-box');
-      box.style.transition = "transform 0.8s ease, opacity 0.5s ease";
-      box.style.transform = "scale(0.95) translateY(-200px)";
-      box.style.opacity = 0;
-      setTimeout(() => {
-        window.location.href = targetUrl;
-      }, 600);
-    }
-
-    function handleFirebaseError(error) {
-      let message = error.message;
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          message = "This email is already registered.";
-          break;
-        case "auth/invalid-email":
-          message = "Invalid email format.";
-          break;
-        case "auth/weak-password":
-          message = "Password should be at least 6 characters.";
-          break;
-        case "auth/wrong-password":
-        case "auth/user-not-found":
-          message = "Incorrect email or password.";
-          break;
-      }
-      showError(message);
-    }
-
-    // OPTIONAL: Call this on hub.html to check guest expiration
-    async function checkGuestExpiration() {
-      const user = auth.currentUser;
-      if (!user) return;
-      const userDoc = await db.collection("users").doc(user.uid).get();
-      const data = userDoc.data();
-      if (data.expiresAt && new Date() > data.expiresAt.toDate()) {
-        await auth.signOut();
-        alert("Your guest session has expired. Please sign up to continue!");
-        window.location.href = "index.html";
-      }
-    }
+    // function handleFirebaseError(error) {
+    //   let message = error.message;
+    //   switch (error.code) {
+    //     case "auth/email-already-in-use":
+    //       message = "This email is already registered.";
+    //       break;
+    //     case "auth/invalid-email":
+    //       message = "Invalid email format.";
+    //       break;
+    //     case "auth/weak-password":
+    //       message = "Password should be at least 6 characters.";
+    //       break;
+    //     case "auth/wrong-password":
+    //     case "auth/user-not-found":
+    //       message = "Incorrect email or password.";
+    //       break;
+    //   }
+    //   showError(message);
+    // }
   </script>
 </body>
 </html>
