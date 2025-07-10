@@ -8,13 +8,6 @@ if(!(await isLogin())) {
 const quizForm = document.getElementById('quizForm');
 const errorEl = document.getElementById('error');
 
-const userProfile = await getUserProfile();
-
-console.log("User Profile:", userProfile);
-
-userProfile.guild = "infj";
-updateUserProfile(userProfile);
-
 quizForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const q1 = quizForm.q1.value;
@@ -25,18 +18,12 @@ quizForm.addEventListener('submit', async (e) => {
     const mbtiResult = q1 + q2 + q3 + q4; // e.g., "ENTP"
 
     try {
-        const user = auth.currentUser;
-        if (!user) {
-            errorEl.innerText = "Not logged in. Please log in again.";
-            return;
-        }
-
         // Update MBTI type in user profile document
-        await db.collection("users").doc(user.uid).update({
+        await updateUserProfile({
             mbtiType: mbtiResult
         });
 
-        window.location.href = "./avatar";
+        window.location.href = "../avatar";
     }
     catch (error) {
         console.error(error);
