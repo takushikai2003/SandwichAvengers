@@ -10,51 +10,47 @@
 
   <div class="box welcome-box">
     <h2>🏰 Welcome to the MBTI Guild Hub</h2>
-    <p>Explore your guild, chat with members, manage tasks, and start your adventure!</p>
+    <!-- <p>Explore your guild, chat with members, manage tasks, and start your adventure!</p> -->
   </div>
 
   <div class="box profile-box">
     <h3>🪪 Profile</h3>
-    <img id="profileAvatar" src="images/default.png" alt="Avatar" style="width:80px; border-radius:50%; border:2px solid white; margin-bottom:10px;">
+    <img id="profileAvatar" src="../images/default.png" alt="Avatar" style="width:80px; border-radius:50%; border:2px solid white; margin-bottom:10px;">
     <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
     <p><strong>MBTI Type:</strong> <span id="profileMBTI">---</span></p>
     <p><strong>Guild:</strong> <span id="profileGuild">---</span></p>
     <p><strong>Activities:</strong> <span id="profileActivities">---</span></p>
   </div>
-  <div class="box board-box">
-  <h3>📜 Guild Board</h3>
-  <div id="boardPosts"></div>
-  <textarea id="boardInput" placeholder="Write your guild announcement or introduction..." rows="3" style="width:100%;"></textarea>
-  <button id="post_board">Post to Board</button>
-  </div>
+  <!-- <div class="box board-box">
+    <h3>📜 Guild Board</h3>
+    <div id="boardPosts"></div>
+    <textarea id="boardInput" placeholder="Write your guild announcement or introduction..." rows="3" style="width:100%;"></textarea>
+    <button id="post_board">Post to Board</button>
+  </div> -->
 
 
   <div class="box todo-box">
     <h3>📋 Personalized To-Do List</h3>
-    <p id="todoInstructions"></p>
-
-    <ul id="j-list" class="todo-list" style="display:none;"></ul>
-    <div id="p-container" class="bubble-container" style="display:none;"></div>
-
-    <form id="todo-form">
+    <!-- <form id="todo-form">
       <input type="text" id="todo-input" placeholder="Add a new task..." required>
-      <button type="submit">Add Task</button>
-    </form>
+      <button type="submit">Add Todo List</button>
+    </form> -->
+    <button id="go_todo">Go Todo List</button>
   </div>
 
-  <div class="box chat-box">
+  <!-- <div class="box chat-box">
     <h3>💬 Guild Chat</h3>
     <div id="chatLog"></div>
     <input id="chatInput" placeholder="Type a message...">
     <button id="send_chat">Send</button>
-  </div>
+  </div> -->
 
-  <div class="box advisor-box">
+  <!-- <div class="box advisor-box">
     <h3>🧙 Guild Advisor</h3>
     <input id="advisorInput" placeholder="Ask your advisor...">
     <button onclick="consultAdvisor()">Consult</button>
     <div id="advisorReply">Waiting for your question...</div>
-  </div>
+  </div> -->
 
   <div class="box game-box">
     <h3>⚽ MBTI Soccer Game</h3>
@@ -62,31 +58,27 @@
     <canvas id="gameCanvas" width="800" height="500" style="display:none; margin-top:10px; border:2px solid white; border-radius:10px;"></canvas>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <script type="module">
-    import { postBoardMessage } from './board.js';
-    import { sendChat } from './chat.js';
     import { startSoccerGame } from './game.js';
-    import { firebaseConfig } from '../env/firebaseCommon.js';
+    import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
+    import { loadProfile } from './profile.js';
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // ログインしていなければログイン画面に戻す
+    if(!(await isLogin())) {
+        window.location.href = "../index.html";
+    }
+
+    loadProfile();
 
     document.getElementById('start_soccer_game').addEventListener('click', () => {
       startSoccerGame();
     });
-  </script>
 
-  <!-- <script src="./profile.js"></script>
-  <script src="./board.js"></script>
-  <script src="./todo.js"></script>
-  <script src="./chat.js"></script>
-  <script src="./advisor.js"></script>
-  <script src="./game.js"></script> -->
+    document.getElementById("go_todo").addEventListener("click", function(event) {
+      console.log("To-Do List button clicked");
+      window.location.href = "../TaskManagement"; // Redirect to the To-Do List page
+    });
+  </script>
 
 </body>
 </html>
