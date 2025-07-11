@@ -6,7 +6,7 @@ if(!(await isLogin())) {
 }
 
 const avatars = ["warrior.png", "mage.png", "healer.png", "rogue.png"];
-let selectedAvatar = null;
+let selectedAvatar = null;//:name
 
 function renderAvatars() {
     const grid = document.getElementById("avatarGrid");
@@ -15,15 +15,15 @@ function renderAvatars() {
         img.src = `../images/${name}`;
         img.className = "avatar";
         img.alt = name;
-        img.onclick = () => selectAvatar(img, img.src);
+        img.onclick = () => selectAvatar(img, img.src, name);
         grid.appendChild(img);
     });
 }
 
-function selectAvatar(img, avatarPath) {
+function selectAvatar(img, avatarPath, name) {
     document.querySelectorAll(".avatar").forEach(el => el.classList.remove("selected"));
     img.classList.add("selected");
-    selectedAvatar = avatarPath;
+    selectedAvatar = name;
     document.getElementById("preview").innerHTML = `
     <p>Selected Avatar:</p>
     <img src="${avatarPath}" onerror="showError('Selected avatar image failed to load.')" />
