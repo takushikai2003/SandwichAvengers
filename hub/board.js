@@ -1,3 +1,5 @@
+import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
+
 const boardDiv = document.getElementById("boardPosts");
 const boardInput = document.getElementById("boardInput");
 

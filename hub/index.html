@@ -10,7 +10,7 @@
 
   <div class="box welcome-box">
     <h2>🏰 Welcome to the MBTI Guild Hub</h2>
-    <p>Explore your guild, chat with members, manage tasks, and start your adventure!</p>
+    <!-- <p>Explore your guild, chat with members, manage tasks, and start your adventure!</p> -->
   </div>
 
   <div class="box profile-box">
@@ -21,12 +21,12 @@
     <p><strong>Guild:</strong> <span id="profileGuild">---</span></p>
     <p><strong>Activities:</strong> <span id="profileActivities">---</span></p>
   </div>
-  <div class="box board-box">
-  <h3>📜 Guild Board</h3>
-  <div id="boardPosts"></div>
-  <textarea id="boardInput" placeholder="Write your guild announcement or introduction..." rows="3" style="width:100%;"></textarea>
-  <button id="post_board">Post to Board</button>
-  </div>
+  <!-- <div class="box board-box">
+    <h3>📜 Guild Board</h3>
+    <div id="boardPosts"></div>
+    <textarea id="boardInput" placeholder="Write your guild announcement or introduction..." rows="3" style="width:100%;"></textarea>
+    <button id="post_board">Post to Board</button>
+  </div> -->
 
 
   <div class="box todo-box">
@@ -42,19 +42,19 @@
     </form>
   </div>
 
-  <div class="box chat-box">
+  <!-- <div class="box chat-box">
     <h3>💬 Guild Chat</h3>
     <div id="chatLog"></div>
     <input id="chatInput" placeholder="Type a message...">
     <button id="send_chat">Send</button>
-  </div>
+  </div> -->
 
-  <div class="box advisor-box">
+  <!-- <div class="box advisor-box">
     <h3>🧙 Guild Advisor</h3>
     <input id="advisorInput" placeholder="Ask your advisor...">
     <button onclick="consultAdvisor()">Consult</button>
     <div id="advisorReply">Waiting for your question...</div>
-  </div>
+  </div> -->
 
   <div class="box game-box">
     <h3>⚽ MBTI Soccer Game</h3>
@@ -63,14 +63,18 @@
   </div>
 
   <script type="module">
-    import { postBoardMessage } from './board.js';
-    import { sendChat } from './chat.js';
+    // import { postBoardMessage } from './board.js';
+    // import { sendChat } from './chat.js';
     import { startSoccerGame } from './game.js';
-    import { firebaseConfig } from '../env/firebaseConfig.js';
+    import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
+    import { loadProfile } from './profile.js';
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // ログインしていなければログイン画面に戻す
+    if(!(await isLogin())) {
+        window.location.href = "../index.html";
+    }
+
+    loadProfile();
 
     document.getElementById('start_soccer_game').addEventListener('click', () => {
       startSoccerGame();
