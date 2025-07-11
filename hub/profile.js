@@ -9,7 +9,7 @@ function loadProfile(uid) {
     document.getElementById("profileUsername").innerText = data.username || "Unknown";
     document.getElementById("profileMBTI").innerText = data.mbtiType || "---";
     document.getElementById("profileGuild").innerText = data.guild || "---";
-    document.getElementById("profileAvatar").src = data.avatar || "images/default.png";
+    document.getElementById("profileAvatar").src = data.avatar || "../images/default.png";
     document.getElementById("profileActivities").innerText = "Coming soon!";
   });
 }

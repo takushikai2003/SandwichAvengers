@@ -15,7 +15,7 @@
 
   <div class="box profile-box">
     <h3>🪪 Profile</h3>
-    <img id="profileAvatar" src="images/default.png" alt="Avatar" style="width:80px; border-radius:50%; border:2px solid white; margin-bottom:10px;">
+    <img id="profileAvatar" src="../images/default.png" alt="Avatar" style="width:80px; border-radius:50%; border:2px solid white; margin-bottom:10px;">
     <p><strong>Username:</strong> <span id="profileUsername">Loading...</span></p>
     <p><strong>MBTI Type:</strong> <span id="profileMBTI">---</span></p>
     <p><strong>Guild:</strong> <span id="profileGuild">---</span></p>
@@ -62,10 +62,6 @@
     <canvas id="gameCanvas" width="800" height="500" style="display:none; margin-top:10px; border:2px solid white; border-radius:10px;"></canvas>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <script type="module">
     import { postBoardMessage } from './board.js';
     import { sendChat } from './chat.js';
@@ -80,13 +76,6 @@
       startSoccerGame();
     });
   </script>
-
-  <!-- <script src="./profile.js"></script>
-  <script src="./board.js"></script>
-  <script src="./todo.js"></script>
-  <script src="./chat.js"></script>
-  <script src="./advisor.js"></script>
-  <script src="./game.js"></script> -->
 
 </body>
 </html>
