@@ -31,15 +31,11 @@
 
   <div class="box todo-box">
     <h3>📋 Personalized To-Do List</h3>
-    <p id="todoInstructions"></p>
-
-    <ul id="j-list" class="todo-list" style="display:none;"></ul>
-    <div id="p-container" class="bubble-container" style="display:none;"></div>
-
-    <form id="todo-form">
+    <!-- <form id="todo-form">
       <input type="text" id="todo-input" placeholder="Add a new task..." required>
-      <button type="submit">Add Task</button>
-    </form>
+      <button type="submit">Add Todo List</button>
+    </form> -->
+    <button id="go_todo">Go Todo List</button>
   </div>
 
   <!-- <div class="box chat-box">
@@ -63,8 +59,6 @@
   </div>
 
   <script type="module">
-    // import { postBoardMessage } from './board.js';
-    // import { sendChat } from './chat.js';
     import { startSoccerGame } from './game.js';
     import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
     import { loadProfile } from './profile.js';
@@ -78,6 +72,11 @@
 
     document.getElementById('start_soccer_game').addEventListener('click', () => {
       startSoccerGame();
+    });
+
+    document.getElementById("go_todo").addEventListener("click", function(event) {
+      console.log("To-Do List button clicked");
+      window.location.href = "../TaskManagement"; // Redirect to the To-Do List page
     });
   </script>
 
