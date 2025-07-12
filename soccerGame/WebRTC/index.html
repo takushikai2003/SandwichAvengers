@@ -1,31 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<title>🛰️ WebRTC Mini Chat</title>
-<style>
-body{font-family:sans-serif;margin:2rem;}
-#log{border:1px solid #ccc;height:150px;overflow:auto;margin-top:.5rem;padding:.5rem;}
-#localMsg{width:100%;margin-top:.5rem;}
-</style>
+  <meta charset="UTF-8" />
+  <title>🛰️ WebRTC Mini Chat</title>
+  <style>
+    body{font-family:sans-serif;margin:2rem;}
+    #log{border:1px solid #ccc;height:150px;overflow:auto;margin-top:.5rem;padding:.5rem;}
+    #localMsg{width:100%;margin-top:.5rem;}
+  </style>
 </head>
 <body>
-<h2>WebRTC DataChannel – 最小チャット</h2>
+  <h2>WebRTC DataChannel – 最小チャット</h2>
 
-<label>Room ID: <input id="roomId" value=""></label>
-<button id="create">Create</button>
-<button id="join">Join</button>
+  <label>Room ID: <input id="roomId" value=""></label>
+  <button id="create">Create</button>
+  <button id="join">Join</button>
 
-<div id="chat" style="display:none">
-  <h3>Messages</h3>
-  <div id="log"></div>
-  <input id="localMsg" placeholder="type & hit Enter…" />
-</div>
+  <div id="chat" style="display:none">
+    <h3>Messages</h3>
+    <div id="log"></div>
+    <input id="localMsg" placeholder="type & hit Enter…" />
+  </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<script src="./main.js" type="module"></script>
+  <script src="./main.js" type="module"></script>
 </body>
 </html>
