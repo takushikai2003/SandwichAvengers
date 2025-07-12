@@ -2,46 +2,120 @@ import { config } from './config.js';
 import { Player, playerSize } from './Player.js';
 import { Ball, ballSize } from './Ball.js';
 
-let player, ball, keys = {}, started = false;
+
+export function startSoccerGame(){
+	requestAnimationFrame(gameLoop);
+}
+
+// canvas init
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = config.canvasW;
 canvas.height = config.canvasH;
 
+canvas.style.display = "block";
+
+const player = new Player("player1", canvas.width/2-100, canvas.height/2-100, 'blue');
+const opponent = new Player("player2", canvas.width/2+100, canvas.height/2+100, 'red')
+const ball = new Ball();
 
 
-export function startSoccerGame() {
-    if (started) return;
-    started = true;
-    canvas.style.display = "block";
+// 時間同期系
+const TICK_RATE = 60;               // simulation steps per second
+const TICK_INTERVAL = 1000 / TICK_RATE; // ms between ticks
 
-    player = new Player('player1', canvas.width/2-100, canvas.height/2-100, 'blue');
-	ball = new Ball();
+let tick = 0;                       // current simulation tick
+let accumulator = 0;                // time accumulator in ms
+let lastTime = performance.now();   // last frame timestamp
 
-    document.addEventListener('keydown', e => {
-		keys[e.key.toLowerCase()] = true;
-		// 矢印キーも対応
-		if (e.key === 'ArrowUp') keys['w'] = true;
-		if (e.key === 'ArrowDown') keys['s'] = true;
-		if (e.key === 'ArrowLeft') keys['a'] = true;
-		if (e.key === 'ArrowRight') keys['d'] = true;
-	});
-    document.addEventListener('keyup', e => {
-		keys[e.key.toLowerCase()] = false;
-		// 矢印キーも対応
-		if (e.key === 'ArrowUp') keys['w'] = false;
-		if (e.key === 'ArrowDown') keys['s'] = false;
-		if (e.key === 'ArrowLeft') keys['a'] = false;
-		if (e.key === 'ArrowRight') keys['d'] = false;
-	});
+let keys = {}, started = false;
 
-    requestAnimationFrame(gameLoop);
+// --- Input buffers ---------------------------------------------------------
+// Map<tick, InputState>
+const localInputs  = new Map();
+const remoteInputs = new Map();
+
+
+const currentInput = { up:false, down:false, left:false, right:false };
+
+// 相手からデータが来たら、それを入れる
+socket.addEventListener("message", ev => {
+	const msg = JSON.parse(ev.data);
+	if (msg.type === "input") {
+		// Store peer input for its exact tick
+		remoteInputs.set(msg.tick, msg.input);
+	}
+});
+
+// --- Input capture ---------------------------------------------------------
+window.addEventListener("keydown",  e => handleKey(e.key, true));
+window.addEventListener("keyup",    e => handleKey(e.key, false));
+
+function handleKey(key, pressed) {
+	switch (key) {
+		case "ArrowUp":    currentInput.up    = pressed; break;
+		case "ArrowDown":  currentInput.down  = pressed; break;
+		case "ArrowLeft":  currentInput.left  = pressed; break;
+		case "ArrowRight": currentInput.right = pressed; break;
+	}
 }
 
-function gameLoop() {
-	update();
-	draw();
+function gameLoop(now) {
+	const delta = now - lastTime;
+	lastTime = now;
+	accumulator += delta;
+
+	// Fixed‑step simulation; consume the accumulator one tick at a time
+	while (accumulator >= TICK_INTERVAL) {
+		simulateTick();
+		accumulator -= TICK_INTERVAL;
+	}
+
+	render();
 	requestAnimationFrame(gameLoop);
+}
+
+
+function simulateTick() {
+	// 1) Freeze current input for this tick and store it
+	const thisInput = { ...currentInput };         // shallow copy
+	localInputs.set(tick, thisInput);
+
+	// 2)相手にデータを送信
+	socket.send(JSON.stringify({
+		type:  "input",
+		tick:  tick,
+		input: thisInput
+	}));
+
+	// 3) Apply local input immediately (client‑side prediction)
+	applyInput(player, thisInput);
+
+	// 4) Apply opponent input if already received; otherwise keep last known
+	const oppInput = remoteInputs.get(tick);
+	if (oppInput) {
+		applyInput(opponent, oppInput);
+	} // else: opponent stays on last predicted path (could add interpolation)
+
+	// 5) Advance simulation tick
+	tick++;
+
+	// 6) (Optional) Clean up old buffered inputs to prevent unbounded growth
+	const pruneBefore = tick - 120; // keep last 2 seconds of history
+	if (localInputs.size > 240) {
+		localInputs.forEach((_, k) => { if (k < pruneBefore) localInputs.delete(k); });
+		remoteInputs.forEach((_, k) => { if (k < pruneBefore) remoteInputs.delete(k); });
+	}
+}
+
+
+
+function applyInput(entity, input) {
+	const dist = entity.speed / TICK_RATE; // distance per tick in px
+	if (input.up)    entity.y -= dist;
+	if (input.down)  entity.y += dist;
+	if (input.left)  entity.x -= dist;
+	if (input.right) entity.x += dist;
 }
 
 
@@ -81,7 +155,7 @@ function update() {
 	}
 }
 
-function draw() {
+function render() {
 	ctx.fillStyle = '#0b7a1a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	// Field center line
@@ -97,6 +171,10 @@ function draw() {
 	// Player
 	ctx.fillStyle = player.color;
 	ctx.fillRect(player.x, player.y, playerSize, playerSize);
+
+	// Opponent
+	ctx.fillStyle = opponent.color;
+	ctx.fillRect(opponent.x, opponent.y, playerSize, playerSize);
 
 	// Ball
 	ctx.fillStyle = 'white';
