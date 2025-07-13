@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>🛰️ WebRTC Mini Chat</title>
+  <style>
+    body{font-family:sans-serif;margin:2rem;}
+    #log{border:1px solid #ccc;height:150px;overflow:auto;margin-top:.5rem;padding:.5rem;}
+    #localMsg{width:100%;margin-top:.5rem;}
+  </style>
+</head>
+<body>
+  <h2>WebRTC DataChannel – 最小チャット</h2>
+
+  <label>Room ID: <input id="roomId" value=""></label>
+  <button id="enter">Enter Room</button>
+
+  <div id="chat">
+    <h3>Messages</h3>
+    <div id="log"></div>
+    <input id="localMsg" placeholder="type & hit Enter…" />
+  </div>
+
+  <script src="./main.js" type="module"></script>
+</body>
+</html>
