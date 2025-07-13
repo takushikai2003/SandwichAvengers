@@ -1,22 +1,18 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import {
-    getFirestore,
-    collection,
-    doc,
-    setDoc,
-    updateDoc,
-    getDoc,
-    addDoc,
-    onSnapshot
-} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-
 import { firebaseConfig } from '../../env/firebaseConfig.js';
-import { guestLogin } from '../../lib/firebaseCommon.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import { guestLogin, setupPresence } from '../../lib/firebaseCommon.js';
+import {
+  getDatabase, ref, child, set, update, push, get,
+  onValue, onChildAdded, remove, onDisconnect, runTransaction
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
 
 await guestLogin();
+setupPresence();
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const rtdb = getDatabase(app);
+
 
 const servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
@@ -37,7 +33,7 @@ class Room extends EventTarget{
     }
 
     sendMessage(message){
-        if(this?.channel.readyState === "open"){
+        if(this.channel?.readyState === "open"){
             this.channel.send(message);
             return true;
         }
@@ -59,7 +55,7 @@ function createPeerConnection(sendCandidatesRef, room) {
 
     pc.addEventListener('icecandidate', async e => {
         if (e.candidate) {
-            await addDoc(sendCandidatesRef, e.candidate.toJSON());
+            push(sendCandidatesRef, e.candidate.toJSON());
         }
     });
 
@@ -67,8 +63,19 @@ function createPeerConnection(sendCandidatesRef, room) {
         setupDataChannelEvents(e.channel, room);
     });
 
+    pc.onconnectionstatechange = () => {
+        const s = pc.connectionState;
+        if (s === 'disconnected' || s === 'failed' || s === 'closed') {
+            // ルームを空ける
+            console.log(`[PC‑${room.id}] disconnected ⇒ clearing room`);
+            remove(ref(rtdb, `rooms/${room.id}`));
+        }
+    };
+
     return pc;
 }
+
+
 
 
 /**
@@ -87,11 +94,11 @@ function setupDataChannelEvents(ch, room) {
     };
 }
 
-/**
- * 
- * @param {string} roomId 
- */
+
+
 export function joinOrCreateRoom(roomId){
+  console.log("joinOrCreateRoom", roomId);
+  
     return new Promise(async (resolve, reject) => {
         if(!roomId){
             console.error("no room id");
@@ -99,119 +106,181 @@ export function joinOrCreateRoom(roomId){
         }
 
         let room;
-        joinRoom(roomId)
-        .then(rm=>{
-            room = rm;
+        createRoom(roomId)
+          .then(rm=>{
+              room = rm;
+              resolve(room);
+          })
+          .catch(async err => {
+            console.log("try join")
+            room = await joinRoom(roomId);
             resolve(room);
-        })
-        .catch(async err => {
-            if(err === "room-not-exists" || err === "join-room-error"){
-                room = await createRoom(roomId);
-                resolve(room);
-            }
-            else{
-                reject(err);
-            }
-        });
+          });
     });
 }
 
-/**
- * 
- * @param {string} roomId 
- */
-export async function createRoom(roomId){
-    if(!roomId){
-        console.error("no room id");
-        return false;
+
+
+// ルームに参加できるかチェックして参加枠を確保する
+async function tryEnterRoom(roomId, role) {
+  const roomRef = ref(rtdb, `rooms/${roomId}`);
+
+  // トランザクションで「caller」または「callee」フィールドを独占的に確保する
+  // roleは "caller" または "callee"
+  return new Promise((resolve, reject) => {
+    // Firebaseトランザクションで枠を確保する
+    // 「枠が空なら入れる、埋まってたら拒否」
+    runTransaction(roomRef, (room) => {
+      if (room === null) {
+        // ルームがなければ初期化
+        room = {};
+      }
+      
+      if (!room[role]) {
+        // まだ埋まってなければ入る
+        room[role] = true;  // ここはユーザーIDやtrueなど好きな値で
+        return room;
+      } else {
+        // 埋まってたらトランザクション失敗扱いにする
+        return; // トランザクションを中止
+      }
+    }, {
+      // トランザクション完了時のコールバック
+      // Firebase SDKのバージョンによって書き方が違うので注意してください
+    }).then(({committed, snapshot}) => {
+      if (committed) {
+        resolve(true);
+      } else {
+        resolve(false);//埋まっていた
+      }
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}
+
+
+
+/* --------------------------------------------------
+   ① createRoom  ＝ 発呼側
+--------------------------------------------------- */
+export function createRoom(roomId) {
+  return new Promise(async (resolve, reject) => {
+    // caller枠を確保できるか
+    if(!(await tryEnterRoom(roomId, 'caller'))){
+      console.error("Room already exists or is full");
+      reject();
+    }
+    
+    if (!roomId) {
+      console.error('no room id');
+      reject();
     }
 
-    const roomRef = doc(db, 'rooms', roomId);
-    const sendCandidatesRef = collection(roomRef, 'callerCandidates');
-    const recvCandidatesRef = collection(roomRef, 'calleeCandidates');
+    // RTDB 参照
+    const roomRef            = ref(rtdb, `rooms/${roomId}`);
+    const callerCandidates   = child(roomRef, 'callerCandidates');
+    const calleeCandidates   = child(roomRef, 'calleeCandidates');
 
+    // ルームモデル（任意のクラス）
     const room = new Room(roomId);
 
-    const pc = createPeerConnection(sendCandidatesRef, room);
+    // RTCPeerConnection
+    const pc = createPeerConnection(callerCandidates, room);
 
-    const dataChannel = pc.createDataChannel('chat');
-    setupDataChannelEvents(dataChannel, room);
+    // DataChannel（任意）
+    const dc = pc.createDataChannel('chat');
+    setupDataChannelEvents(dc, room);
 
+    // Offer を生成
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    await setDoc(roomRef, { roomId, offer });
-
-    onSnapshot(roomRef, async snapshot => {
-        const data = snapshot.data();
-        if (!pc.currentRemoteDescription && data?.answer) {
-            await pc.setRemoteDescription(data.answer);
-        }
+    // RTDB に部屋情報を書き込む
+    await update(roomRef, {
+      roomId,
+      offer: offer
     });
 
-    onSnapshot(recvCandidatesRef, snapshot => {
-        snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-            const candidate = new RTCIceCandidate(change.doc.data());
-            pc.addIceCandidate(candidate);
-        }
-        });
+    // 予期せぬ切断時にもルームを削除
+    onDisconnect(child(roomRef, 'caller')).remove();
+
+    /* 相手からの Answer を待つ */
+    onValue(roomRef, async snap => {
+      const data = snap.val();
+      // if (data?.answer && !pc.currentRemoteDescription) {
+      //   await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+      // }
+      if (!pc.currentRemoteDescription && data && data.answer && data.answer.type) {
+          await pc.setRemoteDescription(data.answer);
+      }
     });
 
+    /* 相手からの ICE を受信 */
+    onChildAdded(calleeCandidates, async snap => {
+      const cand = snap.val();
+      await pc.addIceCandidate(new RTCIceCandidate(cand));
+    });
 
-    return room;
+    console.log('[Room created]', roomId);
+    
+    resolve(room);
+  });
 
+  
 }
 
+/* --------------------------------------------------
+   ② joinRoom  ＝ 着呼側
+--------------------------------------------------- */
+export function joinRoom(roomId) {
+  return new Promise(async (resolve, reject) => {
+    // callee枠を確保できるか
+    if(!(await tryEnterRoom(roomId, 'callee'))){
+      return reject("room-not-exists");
+    }
 
-/**
- * 
- * @param {string} roomId 
- */
-export function joinRoom(roomId){
-    return new Promise(async (resolve, reject) => {
-        if(!roomId){
-            console.error("no room id");
-            reject("no-room-id");
-        }
+    if (!roomId) {
+      console.error('no room id');
+      return reject('no-room-id');
+    }
 
-        const roomsQuery = collection(db, 'rooms');
-        const roomDocs = await getDoc(doc(roomsQuery, roomId));
-        if (!roomDocs.exists()) reject("room-not-exists");
+    try {
+        const roomRef          = ref(rtdb, `rooms/${roomId}`);
+        const snapshot         = await get(roomRef);
+        if (!snapshot.exists()) return reject('room-not-exists');
 
-        try{
-            const roomRef = doc(db, 'rooms', roomId);
-            const sendCandidatesRef = collection(roomRef, 'calleeCandidates');
-            const recvCandidatesRef = collection(roomRef, 'callerCandidates');
+        const { offer }        = snapshot.val();
+        const room             = new Room(roomId);
 
-            const room  = new Room(roomId);
-            const pc = createPeerConnection(sendCandidatesRef, room);
+        const calleeCandidates = child(roomRef, 'calleeCandidates');
+        const callerCandidates = child(roomRef, 'callerCandidates');
+        const pc               = createPeerConnection(calleeCandidates, room);
 
-            const offer = roomDocs.data().offer;
-            await pc.setRemoteDescription(offer);
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
 
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            await updateDoc(roomRef, { answer });
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
 
-            onSnapshot(recvCandidatesRef, snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        const candidate = new RTCIceCandidate(change.doc.data());
-                        pc.addIceCandidate(candidate);
-                    }
-                });
-            });
+        await update(roomRef, { answer: answer });
 
-            console.log('[Joined Room]', roomId);
+        /* 相手（caller）からの ICE */
+        onChildAdded(callerCandidates, async snap => {
+        const cand = snap.val();
+        await pc.addIceCandidate(new RTCIceCandidate(cand));
+        });
 
-            resolve(room);
-        }
-        catch(err){
-            console.error("Error joining room: ", err);
-            reject("join-room-error");
-        }
+        /* 予期せぬ切断時もルーム削除 */
+        onDisconnect(child(roomRef, 'callee')).remove();
 
-        
-    });
+        console.log('[Joined Room]', roomId);
+        resolve(room);
+    }
+    catch (err) {
+        // console.error('joinRoom error:', err);
+        return reject('join-room-error');
+    }
+
+    
+  });
 }

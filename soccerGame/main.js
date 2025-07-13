@@ -1,13 +1,10 @@
 import { config } from './config.js';
 import { Player, playerSize } from './Player.js';
 import { Ball, ballSize } from './Ball.js';
+import { joinOrCreateRoom } from './WebRTC/WebRtcManager.js';
 
-const roomId = "soccerGameRoom_test"; // 固定のルームIDを使用
+let room = null;
 
-
-export function startSoccerGame(){
-	requestAnimationFrame(gameLoop);
-}
 
 // canvas init
 const canvas = document.getElementById('gameCanvas');
@@ -40,14 +37,43 @@ const remoteInputs = new Map();
 
 const currentInput = { up:false, down:false, left:false, right:false };
 
-// 相手からデータが来たら、それを入れる
-socket.addEventListener("message", ev => {
-	const msg = JSON.parse(ev.data);
-	if (msg.type === "input") {
-		// Store peer input for its exact tick
-		remoteInputs.set(msg.tick, msg.input);
+
+
+export async function startSoccerGame(){
+	// room1~10まで参加を試す
+	for(let i = 1; i <= 10; i++) {
+		const roomId = `room${i}`;
+		try{
+			room = await joinOrCreateRoom(roomId);
+		}
+		catch(err) {
+			// console.error("Failed to enter room " + roomId);
+		}
+		
+		if (room) {
+			break;
+		}
 	}
-});
+
+	if(!room){
+		console.error("Failed to enter any room");
+		return;
+	}
+
+	console.log("Entered room:", room.roomId);
+
+	// 相手からデータが来たら、それを入れる
+	room.addEventListener("message", ev => {
+		const msg = JSON.parse(ev.data);
+		if (msg.type === "input") {
+			// Store peer input for its exact tick
+			remoteInputs.set(msg.tick, msg.input);
+		}
+	});
+
+	requestAnimationFrame(gameLoop);
+}
+
 
 // --- Input capture ---------------------------------------------------------
 window.addEventListener("keydown",  e => handleKey(e.key, true));
@@ -84,7 +110,7 @@ function simulateTick() {
 	localInputs.set(tick, thisInput);
 
 	// 2)相手にデータを送信
-	socket.send(JSON.stringify({
+	room.sendMessage(JSON.stringify({
 		type:  "input",
 		tick:  tick,
 		input: thisInput
