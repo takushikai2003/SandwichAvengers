@@ -1,26 +1,14 @@
-import { createRoom, joinRoom } from "./WebRtcManager.js";
+import { joinOrCreateRoom } from "./WebRtcManager.js";
 
 let room;
 
-
-document.querySelector('#create').addEventListener('click', async () => {
+document.querySelector('#enter').addEventListener('click', async () => {
     const roomId = document.querySelector('#roomId').value || Math.random().toString(36).slice(2, 8);
     document.querySelector('#roomId').value = roomId;
 
-    room = await createRoom(roomId);
+    room = await joinOrCreateRoom(roomId);
     room.addEventListener("message", e=>{
         console.log("recieved: ", e.detail.message);
-        log('⬅️', e.detail.message);
-    });
-});
-
-
-document.querySelector('#join').addEventListener('click', async () => {
-    const roomId = document.querySelector('#roomId').value.trim();
-    if (!roomId) return alert('Room ID を入力してください');
-
-    room = await joinRoom(roomId);
-    room.addEventListener("message", e=>{
         log('⬅️', e.detail.message);
     });
 });

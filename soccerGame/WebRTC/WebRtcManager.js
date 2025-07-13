@@ -91,6 +91,35 @@ function setupDataChannelEvents(ch, room) {
  * 
  * @param {string} roomId 
  */
+export function joinOrCreateRoom(roomId){
+    return new Promise(async (resolve, reject) => {
+        if(!roomId){
+            console.error("no room id");
+            reject("no-room-id");
+        }
+
+        let room;
+        joinRoom(roomId)
+        .then(rm=>{
+            room = rm;
+            resolve(room);
+        })
+        .catch(async err => {
+            if(err === "room-not-exists" || err === "join-room-error"){
+                room = await createRoom(roomId);
+                resolve(room);
+            }
+            else{
+                reject(err);
+            }
+        });
+    });
+}
+
+/**
+ * 
+ * @param {string} roomId 
+ */
 export async function createRoom(roomId){
     if(!roomId){
         console.error("no room id");
@@ -139,40 +168,50 @@ export async function createRoom(roomId){
  * 
  * @param {string} roomId 
  */
-export async function joinRoom(roomId){
-    if(!roomId){
-        console.error("no room id");
-        return false;
-    }
-
-    const roomsQuery = collection(db, 'rooms');
-    const roomDocs = await getDoc(doc(roomsQuery, roomId));
-    if (!roomDocs.exists()) return alert('Room が存在しません');
-
-    const roomRef = doc(db, 'rooms', roomId);
-    const sendCandidatesRef = collection(roomRef, 'calleeCandidates');
-    const recvCandidatesRef = collection(roomRef, 'callerCandidates');
-
-    const room  = new Room(roomId);
-    const pc = createPeerConnection(sendCandidatesRef, room);
-
-    const offer = roomDocs.data().offer;
-    await pc.setRemoteDescription(offer);
-
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    await updateDoc(roomRef, { answer });
-
-    onSnapshot(recvCandidatesRef, snapshot => {
-    snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
-            const candidate = new RTCIceCandidate(change.doc.data());
-            pc.addIceCandidate(candidate);
+export function joinRoom(roomId){
+    return new Promise(async (resolve, reject) => {
+        if(!roomId){
+            console.error("no room id");
+            reject("no-room-id");
         }
-    });
-    });
 
-    console.log('[Joined Room]', roomId);
+        const roomsQuery = collection(db, 'rooms');
+        const roomDocs = await getDoc(doc(roomsQuery, roomId));
+        if (!roomDocs.exists()) reject("room-not-exists");
 
-    return room;
+        try{
+            const roomRef = doc(db, 'rooms', roomId);
+            const sendCandidatesRef = collection(roomRef, 'calleeCandidates');
+            const recvCandidatesRef = collection(roomRef, 'callerCandidates');
+
+            const room  = new Room(roomId);
+            const pc = createPeerConnection(sendCandidatesRef, room);
+
+            const offer = roomDocs.data().offer;
+            await pc.setRemoteDescription(offer);
+
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await updateDoc(roomRef, { answer });
+
+            onSnapshot(recvCandidatesRef, snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        const candidate = new RTCIceCandidate(change.doc.data());
+                        pc.addIceCandidate(candidate);
+                    }
+                });
+            });
+
+            console.log('[Joined Room]', roomId);
+
+            resolve(room);
+        }
+        catch(err){
+            console.error("Error joining room: ", err);
+            reject("join-room-error");
+        }
+
+        
+    });
 }

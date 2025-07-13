@@ -2,6 +2,8 @@ import { config } from './config.js';
 import { Player, playerSize } from './Player.js';
 import { Ball, ballSize } from './Ball.js';
 
+const roomId = "soccerGameRoom_test"; // 固定のルームIDを使用
+
 
 export function startSoccerGame(){
 	requestAnimationFrame(gameLoop);
