@@ -38,7 +38,7 @@ function saveAvatar() {
         avatar: selectedAvatar
     })
     .then(() => {
-        window.location.href = "../guild"; // ✅ correct: redirect to guild selection page
+        window.location.href = "../hub";
     })
     .catch(error => {
         console.error(error);
