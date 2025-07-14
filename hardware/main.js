@@ -1,3 +1,5 @@
+import { utf8togbk } from './utf8togbk.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // デバイスステータス
     const devices = [
@@ -159,65 +161,156 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+
+
+
+    // ------------------------------------
     // 送信ボタン
-    sendBtn.addEventListener('click', async () => {
-        const dateStr = eventDate.value;
-        const timeStr = eventTime.value;
-        const content = eventContent.value.trim();
+    // sendBtn.addEventListener('click', async () => {
+    //     const dateStr = eventDate.value;
+    //     const timeStr = eventTime.value;
+    //     const content = eventContent.value.trim();
         
-        if (!content) {
-            showMessage('イベント内容を入力してください', 'error');
-            return;
-        }
+    //     if (!content) {
+    //         showMessage('イベント内容を入力してください', 'error');
+    //         return;
+    //     }
+
+    //     const gbk_base64 = await utf8togbk(content);
         
-        // 创建日期对象
-        const date = new Date(dateStr);
+    //     // 创建日期对象
+    //     const date = new Date(dateStr);
         
-        // 提取日期组成部分
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
+    //     // 提取日期组成部分
+    //     const year = date.getFullYear();
+    //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    //     const day = date.getDate().toString().padStart(2, '0');
         
-        // 格式化时间
-        const [hours, minutes] = timeStr.split(':');
+    //     // 格式化时间
+    //     const [hours, minutes] = timeStr.split(':');
         
-        // 创建要发送的数据（包含年份）
-        // 格式: [YYYY-MM-DD HH:MM] 内容
-        const dataToSend = `[${year}-${month}-${day} ${hours}:${minutes}] ${content}\r\n`;
+    //     // 创建要发送的数据（包含年份）
+    //     // 格式: [YYYY-MM-DD HH:MM] 内容
+    //     const dataToSend = `[${year}-${month}-${day} ${hours}:${minutes}] ${gbk_base64}\r\n`;
         
-        let successCount = 0;
-        let errorCount = 0;
+    //     let successCount = 0;
+    //     let errorCount = 0;
         
-        // 接続されているすべてのデバイスにデータを送信します
-        for (const device of devices) {
-            if (device.connected && device.port) {
-                try {
-                    const writer = device.port.writable.getWriter();
-                    // テキストをバイトストリームにエンコードして送信する
-                    await writer.write(new TextEncoder().encode(dataToSend));
-                    writer.releaseLock();
-                    successCount++;
-                } catch (err) {
-                    console.error(`デバイス ${device.id} に送信失敗:`, err);
-                    errorCount++;
-                }
+    //     // 接続されているすべてのデバイスにデータを送信します
+    //     for (const device of devices) {
+    //         if (device.connected && device.port) {
+    //             try {
+    //                 const writer = device.port.writable.getWriter();
+    //                 // テキストをバイトストリームにエンコードして送信する
+    //                 await writer.write(new TextEncoder().encode(dataToSend));
+    //                 writer.releaseLock();
+    //                 successCount++;
+    //             } catch (err) {
+    //                 console.error(`デバイス ${device.id} に送信失敗:`, err);
+    //                 errorCount++;
+    //             }
+    //         }
+    //     }
+        
+    //     // 結果を表示
+    //     if (successCount > 0) {
+    //         showMessage(`送信成功 ${successCount} デバイス${errorCount > 0 ? `,  デバイス${errorCount}が故障しました` : ''}`, 'success');
+            
+    //         // 履歴に追加
+    //         addToHistory(year, month, day, hours, minutes, content);
+            
+    //         // コンテンツをクリア
+    //         eventContent.value = '';
+    //         updatePreview();
+    //     } else {
+    //         showMessage('どのデバイスもメッセージを正常に受信できませんでした', 'error');
+    //     }
+    // });
+
+
+    // ★ ヘルパー: Base64 → Uint8Array
+function base64ToUint8Array(b64) {
+    const bin = atob(b64);                     // 生バイト列（Unicode 0–255 範囲の文字列）
+    return Uint8Array.from(bin, ch => ch.charCodeAt(0));
+}
+
+sendBtn.addEventListener('click', async () => {
+    const dateStr  = eventDate.value;
+    const timeStr  = eventTime.value;
+    const content  = eventContent.value.trim();
+
+    if (!content) {
+        showMessage('イベント内容を入力してください', 'error');
+        return;
+    }
+
+    // ① UTF‑8 → GBK → Base64 された文字列を取得
+    const gbk_base64 = await utf8togbk(content);
+
+    // ② Base64 を GBKバイト列へデコード
+    const gbkBytes = base64ToUint8Array(gbk_base64);
+
+    // ③ 日時ヘッダーを組み立て（ASCII 部分なので UTF‑8/GBK どちらでも同じバイト値）
+    const date     = new Date(dateStr);
+    const year     = date.getFullYear();
+    const month    = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day      = date.getDate().toString().padStart(2, '0');
+    const [hours, minutes] = timeStr.split(':');
+
+    const headerStr   = `[${year}-${month}-${day} ${hours}:${minutes}] `;
+    const headerBytes = new TextEncoder().encode(headerStr); // ASCII 部分
+
+    // ④ 改行 (\r\n)
+    const crlfBytes = new Uint8Array([0x0d, 0x0a]);
+
+    // ⑤ ヘッダー + 本文(GBK) + 改行 を 1 本の Uint8Array に連結
+    const dataToSend = new Uint8Array(
+        headerBytes.length + gbkBytes.length + crlfBytes.length
+    );
+    dataToSend.set(headerBytes, 0);
+    dataToSend.set(gbkBytes, headerBytes.length);
+    dataToSend.set(crlfBytes, headerBytes.length + gbkBytes.length);
+
+    // ⑥ 各デバイスへ送信
+    let successCount = 0;
+    let errorCount   = 0;
+
+    for (const device of devices) {
+        if (device.connected && device.port) {
+            try {
+                const writer = device.port.writable.getWriter();
+                await writer.write(dataToSend);   // ← 文字列ではなくバイト列を送信
+                writer.releaseLock();
+                successCount++;
+            } catch (err) {
+                console.error(`デバイス ${device.id} に送信失敗:`, err);
+                errorCount++;
             }
         }
-        
-        // 結果を表示
-        if (successCount > 0) {
-            showMessage(`送信成功 ${successCount} デバイス${errorCount > 0 ? `,  デバイス${errorCount}が故障しました` : ''}`, 'success');
-            
-            // 履歴に追加
-            addToHistory(year, month, day, hours, minutes, content);
-            
-            // コンテンツをクリア
-            eventContent.value = '';
-            updatePreview();
-        } else {
-            showMessage('どのデバイスもメッセージを正常に受信できませんでした', 'error');
-        }
-    });
+    }
+
+    // ⑦ フィードバック
+    if (successCount > 0) {
+        showMessage(`送信成功 ${successCount} デバイス${errorCount ? `, ${errorCount} デバイス失敗` : ''}`, 'success');
+        addToHistory(year, month, day, hours, minutes, content);
+        eventContent.value = '';
+        updatePreview();
+    } else {
+        showMessage('どのデバイスもメッセージを正常に受信できませんでした', 'error');
+    }
+});
+
+
+
+
+
+
+
+
+    // ------------------------------------
+
+
+
     
     // クリアボタン
     clearBtn.addEventListener('click', () => {
