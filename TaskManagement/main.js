@@ -1,6 +1,8 @@
 import { Todo } from "../Todo/Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
 import { isLogin, getUserProfile } from "../lib/firebaseCommon.js";
+import { loadCSS } from "../lib/loadCSS.js";
+
 // ログインしていなければログイン画面に戻す
 if(!(await isLogin())) {
     console.log("User not logged in, redirecting to login page.");
@@ -37,6 +39,17 @@ if(mbti.includes("S")){
 // N
 else{
     progress_bar = new ProgressBar(new Date(), 7);
+}
+
+// シンプル
+if(mbti.includes('T')) {
+// if(false){//test用
+    console.log("load simple theme");
+    loadCSS(new URL("./simpleTheme.css", import.meta.url));
+}
+else{
+    console.log("load colorful theme");
+    loadCSS(new URL("./colorfulTheme.css", import.meta.url));
 }
 
 // 表示

@@ -17,6 +17,7 @@ body {
 }
 
 .bubble-container {
+  background-color: white;
   margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
@@ -71,6 +72,7 @@ body {
   justify-content: center;
   gap: 10px; */
   /* position: relative; */
+  background-color: white;
   width: 100%;
   height: 500px;             /* 好きな高さに。スクロールさせたいなら大きめに */
   border: 1px solid #ddd;

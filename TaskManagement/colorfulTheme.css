@@ -1,0 +1,11 @@
+body{
+    background: linear-gradient(135deg, #fdbea1ed, #fbd8c2f4);
+}
+
+.background-bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.2;
+    z-index: 0;
+    /* animation: move 30s infinite alternate ease-in-out; */
+}

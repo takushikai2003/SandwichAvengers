@@ -170,17 +170,6 @@ export class Todo extends EventTarget{
         }
 
 
-        // シンプル
-        if(MbtiType.includes('T')) {
-            console.log("load simple theme");
-            loadCSS(new URL("./simpleTheme.css", import.meta.url));
-        }
-        else{
-            console.log("load colorful theme");
-            loadCSS(new URL("./colorfulTheme.css", import.meta.url));
-        }
-
-
         // DB上のデータを取得して表示する
         getUserProfile().then(profile => {
             profile.todoItems.forEach(async itemData => {
