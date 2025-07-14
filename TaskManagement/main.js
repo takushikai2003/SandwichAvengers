@@ -1,7 +1,7 @@
 import { Todo } from "../Todo/Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
 import { isLogin, getUserProfile } from "../lib/firebaseCommon.js";
-import { loadCSS } from "../lib/loadCSS.js";
+import { loadCSS } from "../lib/loadCss.js";
 
 // ログインしていなければログイン画面に戻す
 if(!(await isLogin())) {
