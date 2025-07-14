@@ -1,24 +1,37 @@
-import { P_Todo } from "../P_Todo/P_Todo.js";
-import { J_Todo } from "../J_Todo/J_Todo.js";
+import { Todo } from "../Todo/Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
+import { isLogin, getUserProfile } from "../lib/firebaseCommon.js";
+// ログインしていなければログイン画面に戻す
+if(!(await isLogin())) {
+    console.log("User not logged in, redirecting to login page.");
+    window.location.href = "../index.html";
+}
 
-const mbti = "isfp";
+const profile = await getUserProfile();
+
+if(!profile.mbtiType) {
+    console.error("MBTI type not found in user profile.");
+    alert("MBTI type is not set in your profile. Please set it first.");
+    window.location.href = "../quiz"; // Redirect to profile page
+}
+
+const mbti = profile.mbtiType.toUpperCase();
 
 // 右側に表示するもの
 let todo_content;
 // P
-if(mbti.includes("p")){
-    todo_content = new P_Todo();
+if(mbti.includes("P")){
+    todo_content = new Todo("P");
 }
 // J
 else{
-    todo_content = new J_Todo();
+    todo_content = new Todo("J");
 }
 
 // 左側に表示するもの
 let progress_bar;
 // S
-if(mbti.includes("s")){
+if(mbti.includes("S")){
     progress_bar = new ProgressBar(new Date(), 100);
 }
 // N
@@ -46,4 +59,8 @@ todo_content.addEventListener("stateChanged", (e) => {
     else{
         progress_bar.incompleteDate(new Date());
     }
+});
+
+todo_content.addEventListener("added", (e) => {
+    
 });

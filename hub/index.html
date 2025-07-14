@@ -52,33 +52,13 @@
     <div id="advisorReply">Waiting for your question...</div>
   </div> -->
 
-  <div class="box game-box">
+  <!-- <div class="box game-box">
     <h3>⚽ MBTI Soccer Game</h3>
     <button id="start_soccer_game">Start Soccer Game</button>
     <canvas id="gameCanvas" width="800" height="500" style="display:none; margin-top:10px; border:2px solid white; border-radius:10px;"></canvas>
-  </div>
+  </div> -->
 
-  <script type="module">
-    import { startSoccerGame } from './game.js';
-    import { isLogin, getUserProfile, updateUserProfile } from "../lib/firebaseCommon.js";
-    import { loadProfile } from './profile.js';
-
-    // ログインしていなければログイン画面に戻す
-    if(!(await isLogin())) {
-        window.location.href = "../index.html";
-    }
-
-    loadProfile();
-
-    document.getElementById('start_soccer_game').addEventListener('click', () => {
-      startSoccerGame();
-    });
-
-    document.getElementById("go_todo").addEventListener("click", function(event) {
-      console.log("To-Do List button clicked");
-      window.location.href = "../TaskManagement"; // Redirect to the To-Do List page
-    });
-  </script>
+  <script type="module" src="./main.js"></script>
 
 </body>
 </html>
