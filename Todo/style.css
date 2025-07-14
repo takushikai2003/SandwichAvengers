@@ -5,11 +5,15 @@ body {
   text-align: center;
 }
 
-input, button {
+#todo-input, #add-button {
   padding: 10px;
   font-size: 16px;
   border-radius: 10px;
   border: 1px solid #ccc;
+}
+
+#add-button{
+  margin-left: 20px;
 }
 
 .bubble-container {
@@ -56,6 +60,22 @@ input, button {
 }
 
 
+
+
+/* ---------------- */
+
+.list-container {
+  margin-top: 20px;
+  /* display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px; */
+  /* position: relative; */
+  width: 100%;
+  height: 500px;             /* 好きな高さに。スクロールさせたいなら大きめに */
+  border: 1px solid #ddd;
+  overflow: hidden;            /* はみ出したらスクロール（不要なら hidden でも可） */
+}
 
 .todo-list {
   list-style-type: disc;

@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>P or JタイプのToDoリスト</title>
+  <title>テストページ</title>
 </head>
 <body>
   <h1 id="title">P or Jタイプ向け ToDoリスト</h1>
@@ -10,7 +10,7 @@
    <script type="module">
     import { Todo } from "./Todo.js";
     
-    const type = "P"; // "P" or "J" を選択
+    const type = "J"; // "P" or "J" を選択
     document.getElementById("title").textContent = `${type}タイプ向け ToDoリスト`;
     document.title = `${type}タイプ向け ToDoリスト`;
     const elem = new Todo(type).elem;

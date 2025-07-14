@@ -114,6 +114,7 @@ export class Todo extends EventTarget{
 
         const addButton = document.createElement("button");
         addButton.textContent = "追加";
+        addButton.id = "add-button";
         todoForm.appendChild(addButton);
 
         elem.appendChild(todoForm);
@@ -141,9 +142,13 @@ export class Todo extends EventTarget{
             });
         }
         else if(MbtiType === 'J') {
+            const todoContainer = document.createElement("div");
+            todoContainer.id = "todo-container";
+            todoContainer.className = "list-container";
+            elem.appendChild(todoContainer);
             const todoListEl = document.createElement("ul");
             todoListEl.className = "todo-list";
-            elem.appendChild(todoListEl);
+            todoContainer.appendChild(todoListEl);
 
             const _this = this;
 
