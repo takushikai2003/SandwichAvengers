@@ -1,5 +1,5 @@
 'use strict';
-import { loadCSS } from "../../lib/loadCss.js";
+import { loadCSS } from "../lib/loadCss.js";
 import { getUserProfile, updateUserProfile, isLogin, logout } from "../lib/firebaseCommon.js";
 
 // ログインしていなければログイン画面に戻す
