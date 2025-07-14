@@ -87,7 +87,7 @@ export class Todo extends EventTarget{
     
     /**
      * @typedef Todo
-     * @param {string} MbtiType - P or J
+     * @param {string} MbtiType - INFJとか。P or Jで画面の種類、TとFでシンプル/カラフルを切り替える
      * @property {Integer} count - 現在のTODOアイテムの数
      * @event Todo#added
      * @event Todo#itemCompleted
@@ -120,7 +120,7 @@ export class Todo extends EventTarget{
         elem.appendChild(todoForm);
 
 
-        if(MbtiType === 'P') {
+        if(MbtiType.includes('P')) {
             const todoContainer = document.createElement("div");
             todoContainer.id = "todo-container";
             todoContainer.className = "bubble-container";
@@ -141,7 +141,7 @@ export class Todo extends EventTarget{
                 input.value = '';
             });
         }
-        else if(MbtiType === 'J') {
+        else if(MbtiType.includes('J')) {
             const todoContainer = document.createElement("div");
             todoContainer.id = "todo-container";
             todoContainer.className = "list-container";
@@ -164,10 +164,20 @@ export class Todo extends EventTarget{
                 todoInput.value = '';
             });
         }
-
         
         else {
             throw new Error("Invalid MbtiType. Use 'P' or 'J'.");
+        }
+
+
+        // シンプル
+        if(MbtiType.includes('T')) {
+            console.log("load simple theme");
+            loadCSS(new URL("./simpleTheme.css", import.meta.url));
+        }
+        else{
+            console.log("load colorful theme");
+            loadCSS(new URL("./colorfulTheme.css", import.meta.url));
         }
 
 
