@@ -8,12 +8,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-satellite-dish"></i>デュアルポート STM32 LCD ブロードキャスター</h1>
-            <p class="subtitle">2つのシリアルデバイスを同時に接続し、2つのSTM32開発ボードに同じメッセージをブロードキャストします。</p>
-        </header>
-        
+    <div class="container"> 
         <div class="devices-container">
             <div class="device-panel">
                 <div class="device-header">
@@ -55,71 +50,13 @@
         </div>
         
         <div class="event-panel">
-            <div class="panel-title">
-                <i class="fas fa-edit"></i>イベント設定
-            </div>
-            
-            <div class="date-time-group">
-                <div class="input-group">
-                    <label for="eventDate"><i class="far fa-calendar"></i> 日付</label>
-                    <input type="date" id="eventDate">
-                </div>
-                
-                <div class="input-group">
-                    <label for="eventTime"><i class="far fa-clock"></i> 時間</label>
-                    <input type="time" id="eventTime">
-                </div>
-            </div>
-            
-            <div class="input-group">
-                <label for="eventContent"><i class="fas fa-align-left"></i> イベント内容</label>
-                <textarea id="eventContent" placeholder="LCDに表示するイベント内容を入力..."></textarea>
-            </div>
-            
             <div class="action-buttons">
                 <button class="action-btn send-btn" id="sendBtn">
                     <i class="fas fa-broadcast-tower"></i> 2台のデバイスにブロードキャスト
                 </button>
-                <button class="action-btn clear-btn" id="clearBtn">
-                    <i class="fas fa-eraser"></i> 内容をクリア
-                </button>
             </div>
         </div>
-        
-        <div class="preview-container">
-            <div class="preview-panel">
-                <div class="preview-title">デバイス1のLCDプレビュー</div>
-                <div class="preview-date" id="previewDate1">2023年11月15日</div>
-                <div class="preview-content">
-                    <div class="preview-text" id="previewText1">イベントデータを待機中...</div>
-                </div>
-            </div>
-            
-            <div class="preview-panel">
-                <div class="preview-title">デバイス2のLCDプレビュー</div>
-                <div class="preview-date" id="previewDate2">2023年11月15日</div>
-                <div class="preview-content">
-                    <div class="preview-text" id="previewText2">イベントデータを待機中...</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="history-panel">
-            <div class="panel-title">
-                <i class="fas fa-history"></i> 最近のイベント履歴
-            </div>
-            <div class="event-list">
-                <ul id="eventHistory"></ul>
-            </div>
-        </div>
-        
-        <footer>
-            <p>デュアルポート STM32 LCD ブロードキャストシステム | 2つのデバイスを同時に制御 | Web シリアル API 通信</p>
-            <p>Chrome/Edgeブラウザ（バージョン89以降）を使用する</p>
-        </footer>
     </div>
-    
-    <div class="message" id="message"></div>
 
     <script src="./main.js" type="module"></script>
 </body>
