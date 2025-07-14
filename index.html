@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MBTI RPG Login</title>
+  <title>Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -81,7 +81,7 @@
   <div class="background-bubble" style="width: 60px; height: 60px; background: #a1c4fd; top: 50%; left: 40%;"></div>
 
   <div class="login-box">
-    <h2>🧙 Welcome to MBTI Task Tool</h2>
+    <h2>🧙 MBTI Todo へようこそ！</h2>
     <!-- <div class="mbti-icon">Discover your personality. Begin your journey.</div> -->
     <!-- <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
@@ -89,7 +89,7 @@
     <button id="loginBtn" >Login</button>
     <button id="signupBtn" >Create Account</button> -->
     <hr>
-    <button id="guestBtn" >Enter as Guest</button>
+    <button id="guestBtn" >ゲストとしてログイン</button>
     <p id="error"></p>
   </div>
 
@@ -112,7 +112,7 @@
 
     //   try {
     //     await emailSignup(email, password);
-    //     animateRedirect("./quiz");
+    //     animateRedirect("./select");
     //   }
     //   catch (error) {
     //     handleFirebaseError(error);
@@ -149,7 +149,7 @@
       setLoading(true);
       try{
         await guestLogin();
-        animateRedirect("./quiz");
+        animateRedirect("./select");
       }
       catch(error){
         console.error("Error during guest login:", error);

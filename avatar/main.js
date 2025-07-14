@@ -25,7 +25,7 @@ function selectAvatar(img, avatarPath, name) {
     img.classList.add("selected");
     selectedAvatar = name;
     document.getElementById("preview").innerHTML = `
-    <p>Selected Avatar:</p>
+    <p>これにする？:</p>
     <img src="${avatarPath}" onerror="showError('Selected avatar image failed to load.')" />
     `;
     showError("");
@@ -38,7 +38,7 @@ function saveAvatar() {
         avatar: selectedAvatar
     })
     .then(() => {
-        window.location.href = "../hub";
+        window.location.href = "../home";
     })
     .catch(error => {
         console.error(error);

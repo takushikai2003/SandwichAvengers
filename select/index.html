@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MBTI select</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./style.css"></link>
+</head>
+<body>
+
+  <div class="quiz-box">
+    <h2>📝 MBTIタイプを選ぼう</h2>
+
+    <form id="quizForm">
+      <div class="question">
+        <p>1. あなたは:</p>
+        <label><input type="radio" name="q1" value="E" required> 外交的 (E)</label>
+        <label><input type="radio" name="q1" value="I"> 内向的 (I)</label>
+      </div>
+
+      <div class="question">
+        <p>2. 外部の情報の受け取り方:</p>
+        <label><input type="radio" name="q2" value="S" required> 感覚型 (S)</label>
+        <label><input type="radio" name="q2" value="N"> 直感型 (N)</label>
+      </div>
+
+      <div class="question">
+        <p>3. どのように決断を下すか:</p>
+        <label><input type="radio" name="q3" value="T" required> 思考型 (T)</label>
+        <label><input type="radio" name="q3" value="F"> 感情型 (F)</label>
+      </div>
+
+      <div class="question">
+        <p>4. どのように外部と接するか:</p>
+        <label><input type="radio" name="q4" value="J" required> 判断型 (J)</label>
+        <label><input type="radio" name="q4" value="P"> 認識型 (P)</label>
+      </div>
+
+      <button type="submit">次へ</button>
+      <p id="error"></p>
+    </form>
+  </div>
+
+  <script src="./main.js" type="module"></script>
+</body>
+</html>

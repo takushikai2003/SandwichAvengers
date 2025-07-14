@@ -14,7 +14,7 @@ const profile = await getUserProfile();
 if(!profile.mbtiType) {
     console.error("MBTI type not found in user profile.");
     alert("MBTI type is not set in your profile. Please set it first.");
-    window.location.href = "../quiz"; // Redirect to profile page
+    window.location.href = "../select";
 }
 
 const mbti = profile.mbtiType.toUpperCase();
