@@ -19,19 +19,28 @@ const devices = [
 export async function connect(id){
     try {
         // シリアルポートのアクセス許可を要求する
-        devices[id].port = await navigator.serial.requestPort();
+        const port = await navigator.serial.requestPort();
+        devices[id].port = port;
+
+        if (port.readable) {
+            // 前回開きっぱなしなら一度閉じる
+            console.log(`デバイス ${id} 既に開いています。閉じます...`);
+            await port.close();
+        }
         
         // ポートを開く
-        await devices[id].port.open({ baudRate: 115200 });
+        await port.open({ baudRate: 115200 });
         
         // デバイスのステータスを更新する
         devices[id].connected = true;
         
         console.log(`device ${id} 接続成功！`);
+        return true;
     }
     catch (err) {
         console.error('接続エラー:', err);
         console.log(` ${id} 接続失敗: ${err.message}`);
+        return false;
     }
 }
 
@@ -51,6 +60,22 @@ export async function disconnect(id){
         console.log(`デバイス ${id} 切断に失敗しました: ${err.message}`);
     }
 }
+
+
+window.addEventListener("beforeunload", async () => {
+    for(const device of devices) {
+        if (device.connected && device.port) {
+            try {
+                await device.port.close();
+            }
+            catch (err) {
+                console.error(`デバイス ${device.id} 切断中にエラー:`, err);
+            }
+        }
+    }
+});
+
+
 
 
 // ★ ヘルパー: Base64 → Uint8Array

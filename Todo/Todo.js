@@ -88,6 +88,7 @@ export class Todo extends EventTarget{
     /**
      * @typedef Todo
      * @param {string} MbtiType - INFJとか。P or Jで画面の種類、TとFでシンプル/カラフルを切り替える
+     * @property {TodoItem[]} tasks - 現在のTODOアイテムのリスト
      * @property {Integer} count - 現在のTODOアイテムの数
      * @event Todo#added
      * @event Todo#itemCompleted
@@ -96,6 +97,7 @@ export class Todo extends EventTarget{
     constructor(MbtiType){
         super();
 
+        this.tasks = [];
         const elem = document.createElement("div");
         this.elem = elem;
 
@@ -190,12 +192,29 @@ export class Todo extends EventTarget{
         });
     }
 
+    getIncompleteTasks() {
+        return this.tasks.filter(task => !task.completed);
+    }
+
+    // 状態が変わるごとに実行して、this.tasksの更新に使う
+    #getTasks(){
+        return new Promise(async (resolve, reject) => {
+            try {
+                const profile = await getUserProfile();
+                resolve(profile.todoItems);
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+                reject(error);
+            }
+        });
+    }
+
 
 
     /** * @private
      * @param {TodoItem} item
      */
-    #addBubbleItem(item) {
+    async #addBubbleItem(item) {
         const container = document.getElementById('todo-container');
 
         const bubble = document.createElement('div');
@@ -220,6 +239,7 @@ export class Todo extends EventTarget{
             }
             _this.dispatchEvent(new CustomEvent("itemCompleted"));
             _this.dispatchEvent(new CustomEvent("stateChanged"));
+            _this.tasks = await _this.#getTasks(); // 更新されたタスクを取得
         };
 
         
@@ -268,11 +288,12 @@ export class Todo extends EventTarget{
         this.count++;
         this.dispatchEvent(new CustomEvent("added"));
         this.dispatchEvent(new CustomEvent("stateChanged"));
+        this.tasks = await this.#getTasks(); // 更新されたタスクを取得
     }
 
 
 
-    #addListItem(item, listParent) {
+    async #addListItem(item, listParent) {
         const li = document.createElement('li');
         const span = document.createElement('span');
         span.innerHTML = item.text;
@@ -294,6 +315,7 @@ export class Todo extends EventTarget{
             }
             _this.dispatchEvent(new CustomEvent("itemCompleted"));
             _this.dispatchEvent(new CustomEvent("stateChanged"));
+            _this.tasks = await _this.#getTasks(); // 更新されたタスクを取得
         };
 
         listParent.appendChild(li);
@@ -301,5 +323,7 @@ export class Todo extends EventTarget{
         this.count++;
         this.dispatchEvent(new CustomEvent("added"));
         this.dispatchEvent(new CustomEvent("stateChanged"));
+        this.tasks = await this.#getTasks(); // 更新されたタスクを取得
+
     }
 }

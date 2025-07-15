@@ -2,6 +2,8 @@ import { Todo } from "../Todo/Todo.js";
 import { ProgressBar } from "../progressBar/ProgressBar.js";
 import { isLogin, getUserProfile } from "../lib/firebaseCommon.js";
 import { loadCSS } from "../lib/loadCss.js";
+import { connect, disconnect, broadcastMessage } from "../hardware/deviceManager.js";
+
 
 // ログインしていなければログイン画面に戻す
 if(!(await isLogin())) {
@@ -85,3 +87,40 @@ document.getElementById("close-modal").addEventListener("click", () => {
     document.getElementById("modal").classList.add("hidden");
     document.getElementById("modal-overlay").classList.add("hidden");
 });
+
+// デバイスを接続
+document.getElementById("connect_device_1").addEventListener("click", async () => {
+    if(await connect(0)){
+        document.getElementById("device_1_status").textContent = "接続済み";
+    }
+    else{
+        document.getElementById("device_1_status").textContent = "接続失敗";
+    }
+});
+document.getElementById("connect_device_2").addEventListener("click", async () => {
+    if(await connect(1)){
+        document.getElementById("device_2_status").textContent = "接続済み";
+    }
+    else{
+        document.getElementById("device_2_status").textContent = "接続失敗";
+    }
+});
+
+// 10秒ごとに完了していないタスクをランダムにデバイスに送信
+setInterval(async () => {
+    // 現在完了していないタスクを取得
+    const incompleteTasks = todo_content.getIncompleteTasks();
+    // ランダムに一つ選ぶ
+    const incompleteTask = incompleteTasks[Math.floor(Math.random() * incompleteTasks.length)] || null;
+    if(incompleteTask) {
+        try {
+            // デバイスに送信
+            await broadcastMessage(incompleteTask.text);
+            console.log("send:", incompleteTask.text);
+        } catch (error) {
+            console.error("Error broadcasting message:", error);
+        }
+    }
+    
+    
+}, 10000);
