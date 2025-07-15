@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デュアルポート STM32 LCD ブロードキャスター</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container"> 
+        <div class="devices-container">
+            <div class="device-panel">
+                <div class="device-header">
+                    <i class="fas fa-microchip device-icon"></i>
+                    <div class="device-title">装置 1</div>
+                    <div class="device-status">
+                        <div class="status-indicator" id="statusIndicator1"></div>
+                        <div class="status-text" id="statusText1">未接続</div>
+                    </div>
+                </div>
+                <div class="device-controls">
+                    <button class="device-btn connect-btn" id="connectBtn1">
+                        <i class="fas fa-link"></i> デバイスの接続
+                    </button>
+                    <button class="device-btn disconnect-btn" id="disconnectBtn1" disabled>
+                        <i class="fas fa-unlink"></i> 切断
+                    </button>
+                </div>
+            </div>
+            
+            <div class="device-panel">
+                <div class="device-header">
+                    <i class="fas fa-microchip device-icon"></i>
+                    <div class="device-title">装置 2</div>
+                    <div class="device-status">
+                        <div class="status-indicator" id="statusIndicator2"></div>
+                        <div class="status-text" id="statusText2">未接続</div>
+                    </div>
+                </div>
+                <div class="device-controls">
+                    <button class="device-btn connect-btn" id="connectBtn2">
+                        <i class="fas fa-link"></i> デバイスの接続
+                    </button>
+                    <button class="device-btn disconnect-btn" id="disconnectBtn2" disabled>
+                        <i class="fas fa-unlink"></i> 切断
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="event-panel">
+            <div class="action-buttons">
+                <button class="action-btn send-btn" id="sendBtn">
+                    <i class="fas fa-broadcast-tower"></i> 2台のデバイスにブロードキャスト
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./main.js" type="module"></script>
+</body>
+</html>
