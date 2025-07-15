@@ -56,7 +56,7 @@ else{
 const left_area = document.getElementById("left_area");
 const right_area = document.getElementById("right_area");
 
-left_area.appendChild(progress_bar.elem);
+left_area.insertAdjacentElement("afterbegin", progress_bar.elem);
 right_area.appendChild(todo_content.elem);
 
 
@@ -74,6 +74,14 @@ todo_content.addEventListener("stateChanged", (e) => {
     }
 });
 
-todo_content.addEventListener("added", (e) => {
-    
+
+// -------------- デバイス設定モーダル -------------
+document.getElementById("device_setup_open").addEventListener("click", () => {
+    document.getElementById("modal").classList.remove("hidden");
+    document.getElementById("modal-overlay").classList.remove("hidden");
+});
+
+document.getElementById("close-modal").addEventListener("click", () => {
+    document.getElementById("modal").classList.add("hidden");
+    document.getElementById("modal-overlay").classList.add("hidden");
 });

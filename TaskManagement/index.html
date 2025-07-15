@@ -19,10 +19,30 @@
         <div id="grid_wrapper">
             <div id="left_area"></div>
             <div id="right_area"></div>
+            <div id="device_setup_area">
+                <button id="device_setup_open">デバイスを設定</button>
+            </div>
         </div>
+
+
+        <!-- モーダル -->
+        <div id="modal" class="hidden">
+            <div id="modal-content">
+                <h2>デバイス設定</h2>
+                <button id="content_device_1">デバイス１を接続</button>
+                <button id="content_device_2">デバイス２を接続</button>
+                
+                <p></p>
+                <br />
+                <button id="close-modal">閉じる</button>
+            </div>
+        </div>
+
+        <div id="modal-overlay" class="hidden"></div>
        
 
         <script src="./main.js" type="module"></script>
         <link rel="stylesheet" href="./style.css" />
+        <link rel="stylesheet" href="./modal.css" />
     </body>
 </html>
