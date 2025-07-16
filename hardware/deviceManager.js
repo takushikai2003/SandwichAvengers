@@ -85,10 +85,10 @@ function base64ToUint8Array(b64) {
 }
 
 export async function broadcastMessage(message){
-    if (!message) {
-        console.error('イベント内容を入力してください', 'error');
-        return;
-    }
+    // if (!message) {
+    //     console.error('イベント内容を入力してください', 'error');
+    //     return;
+    // }
 
     // ① UTF‑8 → GBK → Base64 された文字列を取得
     const gbk_base64 = await utf8togbk(message);

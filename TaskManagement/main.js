@@ -121,6 +121,15 @@ setInterval(async () => {
             console.error("Error broadcasting message:", error);
         }
     }
+    else{
+        try {
+            // デバイスに送信
+            await broadcastMessage("");
+            console.log("send:", "");
+        } catch (error) {
+            console.error("Error broadcasting message:", error);
+        }
+    }
     
     
 }, 10000);
